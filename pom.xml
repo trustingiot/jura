@@ -12,6 +12,7 @@
 	<modules>
 		<module>lombok</module>
 		<module>iot.challenge.jura.util</module>
+		<module>iot.challenge.jura.util.feature</module>
 	</modules>
 
 	<properties>
@@ -196,6 +197,16 @@
 				</configuration>
 			</plugin>
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>de.dentrassi.maven</groupId>
+					<artifactId>osgi-dp</artifactId>
+					<version>0.3.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 
 	</build>
 
