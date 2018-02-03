@@ -13,6 +13,8 @@
 		<module>lombok</module>
 		<module>iot.challenge.jura.util</module>
 		<module>iot.challenge.jura.util.feature</module>
+		<module>iot.challenge.jura.faro</module>
+		<module>iot.challenge.jura.faro.feature</module>
 	</modules>
 
 	<properties>
