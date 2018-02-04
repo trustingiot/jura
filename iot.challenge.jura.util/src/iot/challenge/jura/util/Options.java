@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import lombok.*;
-
 /**
  * Represents a service options
  */
@@ -17,7 +15,7 @@ public abstract class Options {
 	 * @param properties
 	 *            Service properties
 	 */
-	public Options(@NonNull Map<String, Object> properties) {
+	public Options(Map<String, Object> properties) {
 		this.properties = properties;
 	}
 

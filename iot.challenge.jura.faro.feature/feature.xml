@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="iot.challenge.jura.util.feature"
+      id="iot.challenge.jura.faro.feature"
       label="Feature"
       version="1.0.0.qualifier">
 
@@ -16,8 +16,12 @@
       [Enter License Description here.]
    </license>
 
+   <includes
+         id="iot.challenge.jura.util.feature"
+         version="0.0.0"/>
+
    <plugin
-         id="iot.challenge.jura.util"
+         id="iot.challenge.jura.faro"
          download-size="0"
          install-size="0"
          version="0.0.0"
