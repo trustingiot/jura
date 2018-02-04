@@ -16,6 +16,10 @@
       [Enter License Description here.]
    </license>
 
+   <includes
+         id="iot.challenge.jura.util.feature"
+         version="0.0.0"/>
+
    <plugin
          id="iot.challenge.jura.faro"
          download-size="0"

@@ -10,7 +10,6 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>lombok</module>
 		<module>iot.challenge.jura.util</module>
 		<module>iot.challenge.jura.util.feature</module>
 		<module>iot.challenge.jura.faro</module>
@@ -86,7 +85,7 @@
 	</repositories>
 
 	<build>
-	
+
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
@@ -198,6 +197,7 @@
 					</environments>
 				</configuration>
 			</plugin>
+
 		</plugins>
 
 		<pluginManagement>

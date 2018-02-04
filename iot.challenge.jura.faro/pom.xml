@@ -17,5 +17,5 @@
 	<properties>
 		<kura.basedir>${project.basedir}/../../kura/kura</kura.basedir>
 	</properties>
-
+	
 </project>
