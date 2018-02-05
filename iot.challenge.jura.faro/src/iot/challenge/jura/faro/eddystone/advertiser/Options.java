@@ -16,7 +16,7 @@ public class Options extends iot.challenge.jura.faro.advertiser.AdvertiserOption
 	protected static final String PROPERTY_TYPE_DEFAULT = "UID";
 	protected static final String PROPERTY_NAMESPACE_DEFAULT = "00112233445566778899";
 	protected static final String PROPERTY_INSTANCE_DEFAULT = "001122334455";
-	protected static final String PROPERTY_URL_DEFAULT = "https://trusted827.wordpress.com/";
+	protected static final String PROPERTY_URL_DEFAULT = "https://iot.eclipse.org";
 
 	protected final String eddystoneFrametype;
 	

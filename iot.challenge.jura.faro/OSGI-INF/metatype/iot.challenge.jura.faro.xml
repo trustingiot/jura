@@ -160,7 +160,7 @@
 			type="String"
 			cardinality="0" 
 			required="true"
-			default="https://trusted827.wordpress.com/" 
+			default="https://iot.eclipse.org" 
 			description="The url for Eddystone URL frame"/>
 
 	</OCD>
