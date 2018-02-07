@@ -15,3 +15,7 @@ Import-Package: com.eclipsesource.json;version="0.9.4",
  org.osgi.service.component;version="1.2.2"
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
+Export-Package: iot.challenge.jura.graba,
+ iot.challenge.jura.graba.aggregator,
+ iot.challenge.jura.graba.player,
+ iot.challenge.jura.graba.recorder

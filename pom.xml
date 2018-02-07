@@ -15,6 +15,7 @@
 		<module>iot.challenge.jura.faro</module>
 		<module>iot.challenge.jura.faro.feature</module>
 		<module>iot.challenge.jura.graba</module>
+		<module>iot.challenge.jura.websocket</module>
 		<module>iot.challenge.jura.graba.feature</module>
 	</modules>
 
