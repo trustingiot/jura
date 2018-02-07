@@ -4,3 +4,14 @@ Bundle-Name: Graba
 Bundle-SymbolicName: iot.challenge.jura.graba
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.eclipsesource.json;version="0.9.4",
+ iot.challenge.jura.faro,
+ iot.challenge.jura.util,
+ iot.challenge.jura.util.trait,
+ org.eclipse.kura;version="1.4.0",
+ org.eclipse.kura.bluetooth.le.beacon;version="1.0.0",
+ org.eclipse.kura.cloud;version="1.1.0",
+ org.eclipse.kura.message;version="1.1.1",
+ org.osgi.service.component;version="1.2.2"
+Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy
