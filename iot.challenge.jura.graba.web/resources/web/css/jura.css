@@ -1,0 +1,103 @@
+.logo {
+	height: 35px;
+	width: auto;
+	content: url("./../img/graba_white.png");
+	margin-right: 5px;
+	float: left;
+}
+
+.card-block {
+	overflow-y: auto;
+}
+
+.card-block p {
+	margin-bottom: 0.35rem;
+}
+
+.scanner .btn {
+	margin-top: 0.25rem;
+}
+
+#info-container {
+	position: fixed;
+	top: 6.9rem;
+	width: 50%;
+	left: 0;
+	right: 0;
+	font-size: .75rem;
+}
+
+.site-wrapper-inner {
+	padding-top: 9rem;
+	padding-bottom: 5rem;
+	height: 100%;
+}
+
+.main-inner, .main-inner .main-container {
+	height: 100%;
+}
+
+.scanner .card {
+	height: calc(100vh - 14rem);
+}
+
+.scanner, .graba {
+	height: 100%
+}
+
+.submit-form {
+	padding: 1.5rem;
+	margin: 0;
+}
+
+.graba .container {
+	margin-bottom: 1.2rem;
+}
+
+.submit-form, .ReactTable, .scheduled-events {
+	border: solid #343a40;
+	border-width: .1rem;
+}
+
+.scheduled-events {
+	padding-top: .5rem;
+}
+
+.field {
+	margin-bottom: .5rem;
+}
+
+.field-label {
+	font-weight: bold;
+	after: ':'
+}
+
+.field-label::after {
+	content: ': '
+}
+
+.field-value-none {
+	color: gray;
+}
+
+a i {
+	padding-left: .35rem;
+	color: #333;
+}
+
+a:hover i {
+	color: black;
+}
+
+a.deactivated i {
+	color: #BBB;
+	cursor: not-allowed;
+}
+
+.graba-block span h6 {
+	display: inline-block;
+}
+
+.modal {
+	color: #333;
+}

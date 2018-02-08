@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0" localization="en_us">
+	<OCD id="iot.challenge.jura.graba.web"
+		name="Graba web" 
+		description="Graba administrative web">
+		
+		<Icon resource="resources/web/img/graba.png" size="32"/>
+
+		<AD id="graba.application"
+			name="Graba application"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="jura"
+			description="Application topic of Graba"/>
+			
+		<AD id="faro.application"
+			name="faro.application"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="jura"
+			description="Application topic of Faro"/>
+
+		<AD id="mqtt.user"
+			name="mqtt.user"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="mqtt"
+			description="Mqtt username"/>
+
+		<AD id="mqtt.password"
+			name="mqtt.password"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="mqtt"
+			description="Mqtt password"/>
+
+	</OCD>
+	
+	<Designate pid="iot.challenge.jura.graba.web">
+		<Object ocdref="iot.challenge.jura.graba.web"/>
+	</Designate>
+</MetaData>

@@ -115,10 +115,8 @@ public abstract class Scanner implements BeaconManager, BluetoothLeBeaconListene
 	public void updated(ComponentContext context, Map<String, Object> properties) {
 		if (!activated) {
 			activate(context, properties);
-			updated(context, properties);
-		} else {
-			performRegisteredAction("Updating", this::update, properties);
 		}
+		performRegisteredAction("Updating", this::update, properties);
 	}
 
 	@Override
