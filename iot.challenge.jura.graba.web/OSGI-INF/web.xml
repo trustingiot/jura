@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component
+	xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
+	activate="activate"
+	deactivate="deactivate"
+	modified="updated"
+	name="iot.challenge.jura.graba.web">
+
+	<implementation class="iot.challenge.jura.graba.web.service.WebService"/>
+	
+	<service>
+		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
+	</service>
+
+	<property
+		name="service.pid"
+		value="iot.challenge.jura.graba.web"/>
+
+	<reference
+		name="HttpService"
+		interface="org.osgi.service.http.HttpService"
+		cardinality="1..1"
+		bind="setHttpService"
+		unbind="unsetHttpService"/>
+
+	<reference
+		name="CloudPayloadProtoBufDecoder"
+		interface="org.eclipse.kura.cloud.CloudPayloadProtoBufDecoder"
+		cardinality="1..1"
+		bind="setCloudPayloadProtoBufDecoder"
+		unbind="unsetCloudPayloadProtoBufDecoder"/>
+
+	<reference
+		name="DataService"
+		interface="org.eclipse.kura.data.DataService"
+		cardinality="1..1"
+		bind="setDataService"
+		unbind="unsetDataService"/>
+
+	<reference
+		bind="setCloudService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.cloud.CloudService"
+		name="CloudService"
+		policy="static"
+		unbind="unsetCloudService"/>
+
+</scr:component>

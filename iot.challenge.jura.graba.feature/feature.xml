@@ -27,4 +27,18 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="iot.challenge.jura.graba.web"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="iot.challenge.jura.websocket"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>
