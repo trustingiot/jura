@@ -9,3 +9,4 @@ The translation of *jura* in English is *it swears*.
 * **Util**: Kura utilities
 * **Faro**: Multimodal beacon
 * **Graba**: Recording system
+* **Ubica**: Locate beacons
