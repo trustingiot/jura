@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component
+	xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
+	activate="activate"
+	deactivate="deactivate"
+	modified="updated"
+	name="iot.challenge.jura.ubica.installation">
+	
+	<implementation class="iot.challenge.jura.ubica.service.provider.installation.InstallationServiceProvider"/>
+	
+	<service>
+		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
+		<provide interface="iot.challenge.jura.ubica.service.InstallationService"/>
+	</service>
+	
+	<property
+		name="service.pid"
+		value="iot.challenge.jura.ubica.installation"/>
+		
+	<reference
+		bind="setCloudService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.cloud.CloudService"
+		name="CloudService"
+		policy="static"
+		unbind="unsetCloudService"/>
+		
+	<reference
+		name="ConfigurationService"
+		policy="static"
+		bind="setConfigurationService"
+		unbind="unsetConfigurationService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.configuration.ConfigurationService"/>
+
+</scr:component>
