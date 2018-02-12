@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
+	localization="en_us">
+	<OCD id="iot.challenge.jura.ubica.positioning" name="Positioning service"
+		description="Service to positions beacons signals">
+
+		<Icon resource="resources/icons/positioning.png" size="32" />
+
+		<AD id="least.squares.algorithm"
+			name="Least-squares algoritm"
+			type="String"
+			cardinality="0" 
+			required="true"
+			default="Linear" 
+			description="Least-squares trilateriation algorithm">
+			<Option label="Linear" value="Linear"/>
+			<Option label="NonLinear" value="NonLinear"/>
+		</AD>
+
+		<AD id="distance.algorithm"
+			name="Distance algoritm"
+			type="String"
+			cardinality="0" 
+			required="true"
+			default="Linear" 
+			description="Distance algorithm">
+			<Option label="Linear" value="Linear"/>
+			<Option label="Accuracy" value="Accuracy"/>
+		</AD>
+
+		<AD id="min.scanners"
+			name="Minimum scanners"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="4"
+			description="Minimum number of scanners to position a beacon">
+		</AD>
+
+	</OCD>
+
+	<Designate pid="iot.challenge.jura.ubica.positioning">
+		<Object ocdref="iot.challenge.jura.ubica.positioning" />
+	</Designate>
+</MetaData>
