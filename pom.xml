@@ -23,6 +23,9 @@
 
 		<module>iot.challenge.jura.ubica</module>
 		<module>iot.challenge.jura.ubica.feature</module>
+
+		<module>iot.challenge.jura.firma</module>
+		<module>iot.challenge.jura.firma.feature</module>
 	</modules>
 
 	<properties>
