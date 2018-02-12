@@ -40,6 +40,6 @@
 	</OCD>
 
 	<Designate pid="iot.challenge.jura.ubica.positioning">
-		<Object ocdref="iot.challenge.jura.ubica.positioning" />
+		<Object ocdref="iot.challenge.jura.ubica.positioning"/>
 	</Designate>
 </MetaData>
