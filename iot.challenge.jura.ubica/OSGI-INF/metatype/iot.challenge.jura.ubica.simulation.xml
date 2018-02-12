@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
+	localization="en_us">
+	<OCD id="iot.challenge.jura.ubica.simulation" name="Simulation service"
+		description="Service that simulates a BLE beacon that moves in circles in an installation. When it is enabled the configuration is used to create a simulation and after that the service is disabled again. WARNING: It is an experimental service used to test Ubica services. Never use it in production">
+
+		<Icon resource="resources/icons/simulation-light-blue-16.png" size="32" />
+
+		<AD id="enable"
+			name="Enable"
+			type="Boolean"
+			cardinality="0"
+			required="true"
+			default="false"
+			description="Enable service"/>
+
+		<AD id="degrees"
+			name="degrees"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="6"
+			description="Degrees of rotation [6 -> 360/6 = 60 events per round]"/>
+
+		<AD id="rounds"
+			name="rounds"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="3"
+			description="Rounds [rounds=3, degrees=6 -> (360/6) * 3 = 180 events in total]"/>
+
+		<AD id="beacon.interval"
+			name="beacon.interval"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="250"
+			description="Beacon interval (milliseconds) [rounds=3, degrees=6, beacon.interval=250 -> (360/6) * 3 * 250 = 45000 -> 45 seconds]"/>
+
+		<AD id="delay"
+			name="delay"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="15000"
+			description="Delay (milliseconds). [rounds=3, degrees=6, beacon.interval=250, delay=15000 -> (360/6) * 3 * 250 + 15000 = 60000 -> 60 seconds to complete the simulation]"/>
+	</OCD>
+
+	<Designate pid="iot.challenge.jura.ubica.simulation">
+		<Object ocdref="iot.challenge.jura.ubica.simulation"/>
+	</Designate>
+</MetaData>
