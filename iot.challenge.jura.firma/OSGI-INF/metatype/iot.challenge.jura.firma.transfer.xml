@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
+	localization="en_us">
+	<OCD id="iot.challenge.jura.firma.transfer" name="Transfer service"
+		description="Service to transfer information to IOTA">
+
+		<Icon resource="resources/icons/iota.png" size="32" />
+
+		<AD id="iota.wallet.seed"
+			name="IOTA Wallet seed"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="IHDEENZYITYVYSPKAURUZAQKGVJEREFDJMYTANNXXGPZ9GJWTEOJJ9IPMXOGZNQLSNMFDSQOTZAEFTUEB"
+			description="Seed for the generation of the IOTA wallet"/>
+
+		<AD id="iota.node.protocol"
+			name="IOTA Node protocol"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="http"
+			description="IOTA Node protocol"/>
+
+		<AD id="iota.node.host"
+			name="IOTA Node host"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="iota-tangle.io"
+			description="IOTA Node host"/>
+
+		<AD id="iota.node.port"
+			name="IOTA Node port"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="14265"
+			description="IOTA Node port"/>
+
+	</OCD>
+
+	<Designate pid="iot.challenge.jura.firma.transfer">
+		<Object ocdref="iot.challenge.jura.firma.transfer"/>
+	</Designate>
+</MetaData>
