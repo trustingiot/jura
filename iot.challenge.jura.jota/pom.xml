@@ -29,12 +29,29 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>src</directory>
+							<includes>
+								<include>**/*</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>generate-resources</phase>
+						<id>download-sources</id>
+						<phase>generate-sources</phase>
 						<goals>
-							<goal>copy</goal>
+							<goal>unpack</goal>
 						</goals>
 						<configuration>
 							<artifactItems>
@@ -42,7 +59,22 @@
 									<groupId>org.iota</groupId>
 									<artifactId>jota</artifactId>
 									<version>0.9.10</version>
+									<classifier>sources</classifier>
 								</artifactItem>
+							</artifactItems>
+							<stripVersion>true</stripVersion>
+							<outputDirectory>src</outputDirectory>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>download-libs</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
 								<artifactItem>
 									<groupId>org.bouncycastle</groupId>
 									<artifactId>bcprov-jdk15on</artifactId>
@@ -90,6 +122,31 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>src</outputDirectory>
+							<resources>
+								<resource>
+									<directory>resources/patches</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
