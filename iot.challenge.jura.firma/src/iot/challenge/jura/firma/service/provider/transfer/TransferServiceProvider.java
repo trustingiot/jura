@@ -3,6 +3,7 @@ package iot.challenge.jura.firma.service.provider.transfer;
 import iot.challenge.jura.firma.service.TransferService;
 import iot.challenge.jura.util.trait.ActionRecorder;
 import jota.IotaAPI;
+import jota.IotaLocalPoW;
 import jota.dto.response.SendTransferResponse;
 import jota.error.ArgumentException;
 import jota.model.Transfer;
@@ -10,6 +11,7 @@ import jota.pow.SpongeFactory;
 import jota.utils.IotaAPIUtils;
 import jota.utils.TrytesConverter;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import java.util.function.Consumer;
 import org.eclipse.kura.configuration.ConfigurableComponent;
 import org.osgi.service.component.ComponentContext;
 
+import cfb.pearldiver.PearlDiver;
 import cfb.pearldiver.PearlDiverLocalPoW;
 
 /**
@@ -46,6 +49,8 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	//
 	//
 	protected IotaAPI api;
+	protected IotaLocalPoW pow;
+	protected PearlDiver diver;
 	protected Options options;
 	protected String address;
 	protected List<Transfer> transfers;
@@ -76,7 +81,33 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	//
 	//
 	protected void activate(Map<String, Object> properties) {
+		createPoW();
 		createOptions(properties);
+	}
+
+	protected void createPoW() {
+		try {
+			pow = new PearlDiverLocalPoW();
+			Field field = Arrays.asList(PearlDiverLocalPoW.class.getDeclaredFields())
+					.stream()
+					.filter(f -> f.getType().equals(PearlDiver.class))
+					.findFirst()
+					.orElse(null);
+
+			if (field == null)
+				throw new IllegalArgumentException();
+
+			boolean flag = field.isAccessible();
+			field.setAccessible(true);
+			diver = (PearlDiver) field.get(pow);
+			field.setAccessible(flag);
+
+		} catch (Exception e) {
+			error("Create IOTA local PoW failed");
+			pow = null;
+			diver = null;
+		}
+
 	}
 
 	protected void createOptions(Map<String, Object> properties) {
@@ -87,7 +118,7 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	protected void updateAPI() {
 		if (shouldUpdateAPI()) {
 			api = new IotaAPI.Builder()
-					.localPoW(new PearlDiverLocalPoW())
+					.localPoW(pow)
 					.protocol(options.getIotaNodeProtocol())
 					.host(options.getIotaNodeHost())
 					.port(options.getIotaNodePort())
@@ -132,6 +163,8 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 
 	protected void shutdownWorker() {
 		synchronized (this) {
+			interrupt();
+
 			if (transferHandle != null) {
 				transferHandle.cancel(true);
 				transferHandle = null;
@@ -154,8 +187,26 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	//
 	//
 	@Override
-	public boolean sendingTransfer() {
+	public boolean isTransferring() {
 		return transferHandle != null;
+	}
+
+	@Override
+	public boolean ready() {
+		return !(address == null || isTransferring());
+	}
+
+	@Override
+	public void interrupt() {
+		if (isTransferring()) {
+			diver.cancel();
+			api.interruptAttachingToTangle();
+		}
+	}
+
+	@Override
+	public String getAddress() {
+		return address;
 	}
 
 	@Override
@@ -169,12 +220,20 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	}
 
 	@Override
+	public void transfer(String message, Consumer<SendTransferResponse> callback) {
+		transfer(new Transfer(address, 0, TrytesConverter.toTrytes(message), ""), callback);
+	}
+
+	@Override
+	public void transfer(String message) {
+		transfer(address, message, null);
+	}
+
+	@Override
 	public void transfer(Transfer transfer, Consumer<SendTransferResponse> callback) {
 		boolean executed = false;
 
-		synchronized (this) {
-			executed = executeTransfer(transfer, callback);
-		}
+		executed = executeTransfer(transfer, callback);
 
 		if (callback != null && !executed)
 			callback.accept(null);
@@ -186,7 +245,7 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	}
 
 	protected boolean executeTransfer(Transfer transfer, Consumer<SendTransferResponse> callback) {
-		if (sendingTransfer())
+		if (!ready())
 			return false;
 
 		if (transferWorker == null)
@@ -221,6 +280,7 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	}
 
 	protected SendTransferResponse sendToIOTA(List<Transfer> transfers) throws ArgumentException {
+		info("IOTA Transaction started");
 		return api.sendTransfer(
 				options.getIotaSeed(), // Seed
 				2, // Security
@@ -233,7 +293,7 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	}
 
 	protected void logTransfer(long time, SendTransferResponse transfer) {
-		info("Transaction https://thetangle.org/transaction/{} done ({} seconds)",
+		info("Transaction https://thetangle.org/transaction/{} completed ({} seconds)",
 				transfer.getTransactions().get(0).getHash(),
 				(System.currentTimeMillis() - time) / 1000);
 	}

@@ -19,3 +19,7 @@ Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/commons-math3.jar,
  .
+Export-Package: iot.challenge.jura.ubica.installation,
+ iot.challenge.jura.ubica.service,
+ iot.challenge.jura.ubica.simulation,
+ iot.challenge.jura.ubica.trilaterization

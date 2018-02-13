@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
+	localization="en_us">
+	<OCD id="iot.challenge.jura.firma.transfer.location" name="Transfer location service"
+		description="Service to transfer locations to IOTA">
+
+		<Icon resource="resources/icons/transfer-location.png" size="32" />
+
+		<AD id="enable"
+			name="Enable"
+			type="Boolean"
+			cardinality="0"
+			required="true"
+			default="false"
+			description="Enable service"/>
+
+		<AD id="update.rate"
+			name="Update rate"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="30"
+			description="Update location's queue with the latest locations (seconds)."/>
+
+		<AD id="location.timeout"
+			name="Location timeout"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="600"
+			description="Expired locations will not be sent (seconds)."/>
+
+		<AD id="publication.rate"
+			name="Publication rate"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="300"
+			description="Publication rate (seconds)"/>
+
+	</OCD>
+
+	<Designate pid="iot.challenge.jura.firma.transfer.location">
+		<Object ocdref="iot.challenge.jura.firma.transfer.location"/>
+	</Designate>
+</MetaData>

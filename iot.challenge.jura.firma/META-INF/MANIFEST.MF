@@ -5,6 +5,9 @@ Bundle-SymbolicName: iot.challenge.jura.firma
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: cfb.pearldiver,
+ com.eclipsesource.json;version="0.9.4",
+ iot.challenge.jura.ubica.installation,
+ iot.challenge.jura.ubica.service,
  iot.challenge.jura.util,
  iot.challenge.jura.util.trait,
  jota,
