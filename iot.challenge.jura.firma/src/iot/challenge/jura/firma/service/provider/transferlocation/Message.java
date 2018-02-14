@@ -14,7 +14,7 @@ public class Message {
 	public static final String TOPIC_APP = "app";
 	public static final String TOPIC_INSTALLATION = "installation";
 	public static final String TOPIC_DEVICE = "device";
-	public static final String TOPIC_LOCATION = "location";
+	public static final String TOPIC_LOCATION = "point";
 
 	public static final String APP = "jura";
 

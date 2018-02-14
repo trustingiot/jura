@@ -1,5 +1,6 @@
 package iot.challenge.jura.firma.service.provider.transferlocation;
 
+import iot.challenge.jura.firma.service.SignService;
 import iot.challenge.jura.firma.service.TransferLocationService;
 import iot.challenge.jura.firma.service.TransferService;
 import iot.challenge.jura.ubica.installation.Point;
@@ -22,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.kura.configuration.ConfigurableComponent;
 import org.osgi.service.component.ComponentContext;
+
+import com.eclipsesource.json.JsonObject;
 
 /**
  * TransferLocationService provider
@@ -63,6 +66,7 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 	//
 	protected LocationService locationService;
 	protected TransferService transferService;
+	protected SignService signService;
 
 	protected void setLocationService(LocationService service) {
 		locationService = service;
@@ -78,6 +82,14 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 
 	protected void unsetTransferService(TransferService service) {
 		transferService = null;
+	}
+
+	protected void setSignService(SignService service) {
+		signService = service;
+	}
+
+	protected void unsetSignService(SignService service) {
+		signService = null;
 	}
 
 	////
@@ -295,7 +307,14 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 	}
 
 	protected void transferLocation(Dated<Message> message) {
-		transferService.transfer(message.element.toString(), (r) -> doAfterTransfer(message.element, r));
+		transferService.transfer(buildMessage(message), (r) -> doAfterTransfer(message.element, r));
+	}
+
+	protected String buildMessage(Dated<Message> message) {
+		JsonObject body = new JsonObject();
+		body.add("timestamp", message.time);
+		body.add("location", message.element.toJson());
+		return signService.sign(body).toString();
 	}
 
 	protected void doAfterTransfer(Message message, SendTransferResponse response) {

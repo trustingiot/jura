@@ -33,4 +33,12 @@
 		name="TransferService"
 		policy="static" />
 
+	<reference
+		bind="setSignService"
+		unbind="unsetSignService"
+		cardinality="1..1"
+		interface="iot.challenge.jura.firma.service.SignService"
+		name="SignService"
+		policy="static" />
+
 </scr:component>
