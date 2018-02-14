@@ -16,6 +16,13 @@ Import-Package: cfb.pearldiver,
  jota.model,
  jota.pow,
  jota.utils,
+ org.bouncycastle.bcpg,
+ org.bouncycastle.jce.provider,
+ org.bouncycastle.openpgp,
+ org.bouncycastle.openpgp.examples,
+ org.bouncycastle.openpgp.jcajce,
+ org.bouncycastle.openpgp.operator,
+ org.bouncycastle.openpgp.operator.jcajce,
  org.eclipse.kura.configuration;version="1.1.2",
  org.osgi.service.component;version="1.2.2"
 Service-Component: OSGI-INF/*.xml

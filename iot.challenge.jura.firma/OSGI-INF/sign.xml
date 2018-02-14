@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component
+	xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
+	activate="activate"
+	deactivate="deactivate"
+	name="iot.challenge.jura.firma.sign">
+
+	<implementation class="iot.challenge.jura.firma.service.provider.sign.SignServiceProvider"/>
+
+	<service>
+		<provide interface="iot.challenge.jura.firma.service.SignService"/>
+	</service>
+
+	<property
+		name="service.pid"
+		value="iot.challenge.jura.firma.sign"/>
+
+</scr:component>
