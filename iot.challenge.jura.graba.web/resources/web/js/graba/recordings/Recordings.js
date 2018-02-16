@@ -13,7 +13,7 @@ define(
 			}
 
 			componentDidMount() {
-				let socket = new WebSocket( 'ws://' + location.host + '/jura/recordings' );
+				let socket = new WebSocket( 'ws://' + location.host + '/jura/graba/recordings' );
 				socket.onopen = this.cleanRecordings
 				socket.onmessage = this.addRecording
 				this.socket = socket;

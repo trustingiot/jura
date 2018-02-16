@@ -3,7 +3,7 @@ requirejs.config( {
 		'react': 'https://unpkg.com/react@16/umd/react.development',
 		'react-dom': 'https://unpkg.com/react-dom@16/umd/react-dom.development',
 		'react-table': 'https://unpkg.com/react-table@latest/react-table',
-		'js': 'jura/js'
+		'js': 'graba/js'
 	}
 } );
 
