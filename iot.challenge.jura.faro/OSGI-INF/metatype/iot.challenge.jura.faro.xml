@@ -5,7 +5,7 @@
 		description="Faro is a multimodal beacon based on Kura 3.1 examples. It supports different protocols (iBeacon/Eddystone) and working modes (advertiser/scanner)">
 		
 		<Icon resource="resources/icons/faro.png" size="32"/>
-			
+
 		<AD id="enable"
 			name="Enable"
 			type="Boolean"
@@ -13,7 +13,7 @@
 			required="true"
 			default="false"
 			description="Enable beacon"/>
-		
+
 		<AD id="iname"
 			name="Bluetooth interface name"
 			type="String"
@@ -21,7 +21,7 @@
 			required="true"
 			default="hci0"
 			description="Name of bluetooth adapter"/>
-		
+
 		<AD id="beacon.working.mode"
 			name="Beacon working mode"
 			type="String"
@@ -32,7 +32,7 @@
 			<Option label="advertiser" value="advertiser"/>
 			<Option label="scanner" value="scanner"/>
 		</AD>
-		
+
 		<AD id="beacon.protocol"
 			name="Beacon protocol"
 			type="String"
@@ -51,7 +51,7 @@
 			required="true"
 			default="jura"
 			description="Application topic for MQTT"/>
-			
+
 		<AD id="topic.prefix"
 			name="Scanner > Topic"
 			type="String"
@@ -67,7 +67,7 @@
 			required="true"
 			default="60"
 			description="iBeacon scan duration in seconds"/>
-		
+
 		<AD id="publish.period"
 			name="Scanner > Publish period"
 			type="Integer"
@@ -83,7 +83,7 @@
 			required="true"
 			default="1000"
 			description="Minimum time interval between beacons (milliseconds)"/>
-			
+
 		<AD id="max.beacon.interval"
 			name="Advertiser > Maximum beacon advertising interval"
 			type="Integer"
@@ -91,7 +91,7 @@
 			required="true"
 			default="1000"
 			description="Maximum time interval between beacons (milliseconds)"/>
-		
+
 		<AD id="tx.power"
 			name="Advertiser > Transmission power"
 			type="Integer"
@@ -99,9 +99,9 @@
 			required="true"
 			default="0"
 			description="Transmission power measured at 1m away from the beacon expressed in dBm"/>
-			
+
 		<!-- iBeacon options -->
-		
+
 		<AD id="uuid"
 			name="Advertiser > iBeacon > UUID"
 			type="String"
@@ -109,7 +109,7 @@
 			required="true"
 			default="aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
 			description="128-bit uuid for beacon advertising expressed as hex string"/>
-		
+
 		<AD id="major"  
 			name="Advertiser > iBeacon > Major"
 			type="Integer"
@@ -117,7 +117,7 @@
 			required="true"
 			default="0" 
 			description="Major value"/>
-		
+
 		<AD id="minor"  
 			name="Advertiser > iBeacon > Minor"
 			type="Integer"
@@ -125,7 +125,7 @@
 			required="true"
 			default="0" 
 			description="Minor value"/>
-			
+
 		<!-- Eddystone options -->
 
 		<AD id="eddystone.type"
@@ -138,7 +138,7 @@
 			<Option label="UID" value="UID"/>
 			<Option label="URL" value="URL"/>
 		</AD>
-		
+
 		<AD id="eddystone.uid.namespace"
 			name="Advertiser > Eddystone > Namespace for UID frame"
 			type="String"
@@ -146,7 +146,7 @@
 			required="true"
 			default="00112233445566778899" 
 			description="The 10-byte namespace for Eddystone UID frame in hexadecimal"/>
-		
+
 		<AD id="eddystone.uid.instance"
 			name="Advertiser > Eddystone > Instance for UID frame"
 			type="String"
@@ -154,7 +154,7 @@
 			required="true"
 			default="001122334455" 
 			description="The 6-byte instance for Eddystone UID frame in hexadecimal"/>
-		
+
 		<AD id="eddystone.url"
 			name="Advertiser > Eddystone > Url for URL frame"
 			type="String"
@@ -164,7 +164,7 @@
 			description="The url for Eddystone URL frame"/>
 
 	</OCD>
-	
+
 	<Designate pid="iot.challenge.jura.faro">
 		<Object ocdref="iot.challenge.jura.faro"/>
 	</Designate>

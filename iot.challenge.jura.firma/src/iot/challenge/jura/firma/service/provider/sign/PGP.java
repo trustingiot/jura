@@ -5,6 +5,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.bouncycastle.openpgp.examples.ClearSignedFileProcessor;
+import org.eclipse.kura.KuraException;
+import org.eclipse.kura.command.CommandService;
 
 /**
  * PGP functions
@@ -14,13 +16,28 @@ public class PGP {
 	protected static String PARAMETER_SIGN = "-s";
 	protected static String PARAMETER_VERIFY = "-v";
 
-	protected static String BUFFER = "/tmp/tmp-sign";
+	protected static String BUFFER = "jura/sign";
 	protected static String BUFFER_SIGN = BUFFER + ".asc";
 
+	protected Options options;
 	protected PGPKeys keys;
 
-	public PGP() {
-		keys = PGPKeys.getInstance();
+	private PGP() {
+		super();
+	}
+
+	private PGP(Options options) {
+		this();
+		this.options = options;
+	}
+
+	public PGP(CommandService commandService, Options options) {
+		this(options);
+		try {
+			keys = PGPKeys.build(commandService, options);
+		} catch (KuraException e) {
+			keys = null;
+		}
 	}
 
 	public PGPKeys getKeys() {
@@ -35,16 +52,21 @@ public class PGP {
 	 * @return Signed message
 	 */
 	public String sign(String message) {
+		return sign(message, true);
+	}
+
+	private String sign(String message, boolean retry) {
 		try {
 			if (!message.endsWith("\n"))
 				message += "\n";
 
 			Files.write(Paths.get(BUFFER), message.getBytes());
 
-			String path = Paths.get(PGPKeys.KEY_SECRET).toFile().getAbsolutePath();
-
 			ClearSignedFileProcessor.main(new String[] {
-					PARAMETER_SIGN, BUFFER, path, PGPKeys.PASS
+					PARAMETER_SIGN,
+					Paths.get(BUFFER).toFile().getAbsolutePath(),
+					Paths.get(PGPKeys.KEY_SECRET).toFile().getAbsolutePath(),
+					options.getPass()
 			});
 
 			String result = readFile(BUFFER_SIGN);
@@ -54,7 +76,9 @@ public class PGP {
 
 			return result;
 		} catch (Exception e) {
-			return null;
+			// The first call to ClearSignedFileProcessor fails sometimes when the service
+			// is installed (this code is invoked exceptionally...)
+			return retry ? sign(message, false) : null;
 		}
 	}
 

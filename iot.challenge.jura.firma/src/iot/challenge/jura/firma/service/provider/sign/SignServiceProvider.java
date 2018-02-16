@@ -3,6 +3,13 @@ package iot.challenge.jura.firma.service.provider.sign;
 import iot.challenge.jura.firma.service.SignService;
 import iot.challenge.jura.util.trait.ActionRecorder;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.kura.KuraException;
+import org.eclipse.kura.command.CommandService;
+import org.eclipse.kura.configuration.ConfigurableComponent;
+import org.eclipse.kura.configuration.ConfigurationService;
 import org.osgi.service.component.ComponentContext;
 
 import com.eclipsesource.json.JsonObject;
@@ -10,7 +17,7 @@ import com.eclipsesource.json.JsonObject;
 /**
  * SignService provider
  */
-public class SignServiceProvider implements SignService, ActionRecorder {
+public class SignServiceProvider implements SignService, ActionRecorder, ConfigurableComponent {
 
 	////
 	//
@@ -29,15 +36,44 @@ public class SignServiceProvider implements SignService, ActionRecorder {
 	// Parameters
 	//
 	//
+	protected Options options;
 	protected PGP pgp;
+
+	////
+	//
+	// Registered services
+	//
+	//
+	protected CommandService commandService;
+	protected ConfigurationService configurationService;
+
+	protected void setCommandService(CommandService service) {
+		commandService = service;
+	}
+
+	protected void unsetCommandService(CommandService service) {
+		commandService = null;
+	}
+
+	protected void setConfigurationService(ConfigurationService service) {
+		configurationService = service;
+	}
+
+	protected void unsetConfigurationService(ConfigurationService service) {
+		configurationService = null;
+	}
 
 	////
 	//
 	// Service methods
 	//
 	//
-	protected void activate(ComponentContext context) {
-		performRegisteredAction("Activating", this::activate);
+	protected void activate(ComponentContext context, Map<String, Object> properties) {
+		performRegisteredAction("Activating", this::update, properties);
+	}
+
+	protected void updated(ComponentContext context, Map<String, Object> properties) {
+		performRegisteredAction("Updating", this::update, properties);
 	}
 
 	protected void deactivate(ComponentContext context) {
@@ -50,8 +86,22 @@ public class SignServiceProvider implements SignService, ActionRecorder {
 	// Functionality
 	//
 	//
-	protected void activate() {
-		pgp = new PGP();
+	protected void update(Map<String, Object> properties) {
+		options = new Options(properties);
+		pgp = new PGP(commandService, options);
+		disableGenerateOption(properties);
+	}
+
+	protected void disableGenerateOption(Map<String, Object> properties) {
+		if ((boolean) properties.get(Options.PROPERTY_GENERATE)) {
+			Map<String, Object> map = new HashMap<>(properties);
+			map.put(Options.PROPERTY_GENERATE, false);
+			try {
+				configurationService.updateConfiguration(ID, map);
+			} catch (KuraException e) {
+				error("Unable to update configuartion", e);
+			}
+		}
 	}
 
 	////
@@ -100,6 +150,7 @@ public class SignServiceProvider implements SignService, ActionRecorder {
 		JsonObject signJSON = new JsonObject();
 		signJSON.add("hash", extractHash(sign));
 		signJSON.add("value", extractSignature(sign));
+		signJSON.add("key", Long.toHexString(pgp.getKeys().getPublicKey().getKeyID()));
 
 		JsonObject result = new JsonObject();
 		result.add("body", body);

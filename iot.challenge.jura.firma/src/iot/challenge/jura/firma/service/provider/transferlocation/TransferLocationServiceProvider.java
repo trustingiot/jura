@@ -206,19 +206,23 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 			}
 
 			if (previouslyEmpty && !buffer.isEmpty()) {
-				if (transferService.ready()) {
-					if (transferHandle != null) {
-						transferHandle.cancel(true);
-						transferHandle = null;
-					}
-					transferASAP = true;
-					scheduleTransfer();
-				}
+				rescheduleTransfer(true);
 			}
 
 			updateHandle = null;
 		}
 		scheduleUpdate();
+	}
+
+	protected void rescheduleTransfer(boolean asap) {
+		if (transferService.ready()) {
+			if (transferHandle != null) {
+				transferHandle.cancel(true);
+				transferHandle = null;
+			}
+			transferASAP = asap;
+			scheduleTransfer();
+		}
 	}
 
 	protected boolean isNewLocation(String installation, String beacon, long time) {
@@ -234,9 +238,7 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 			updateWorker = Executors.newScheduledThreadPool(1);
 		}
 
-		updateHandle = updateWorker.schedule(this::updateBuffer,
-				transferASAP ? 5 : options.getUpdateRate(),
-				TimeUnit.SECONDS);
+		updateHandle = updateWorker.schedule(this::updateBuffer, options.getUpdateRate(), TimeUnit.SECONDS);
 	}
 
 	protected void transfer() {
@@ -307,7 +309,13 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 	}
 
 	protected void transferLocation(Dated<Message> message) {
-		transferService.transfer(buildMessage(message), (r) -> doAfterTransfer(message.element, r));
+		String signedMessage = buildMessage(message);
+		if (signedMessage != null) {
+			transferService.transfer(signedMessage, (r) -> doAfterTransfer(message.element, r));
+		} else {
+			error("The location could not be signed");
+			rescheduleTransfer(true);
+		}
 	}
 
 	protected String buildMessage(Dated<Message> message) {
@@ -319,14 +327,8 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 
 	protected void doAfterTransfer(Message message, SendTransferResponse response) {
 		logTransfer(message, response);
-		if (transferASAP || response == null) {
-			transferASAP = false;
-			if (transferHandle != null) {
-				transferHandle.cancel(true);
-				transferHandle = null;
-			}
-			transfer();
-		}
+		if (transferASAP || response == null)
+			rescheduleTransfer(false);
 	}
 
 	protected void logTransfer(Message message, SendTransferResponse response) {
@@ -349,7 +351,10 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 			transferWorker = Executors.newScheduledThreadPool(1);
 		}
 
-		transferHandle = transferWorker.schedule(this::transfer, options.getPublicationRate(), TimeUnit.SECONDS);
+		transferHandle = transferWorker.schedule(
+				this::transfer,
+				transferASAP ? 5 : options.getPublicationRate(),
+				TimeUnit.SECONDS);
 	}
 
 	protected void deactivate() {

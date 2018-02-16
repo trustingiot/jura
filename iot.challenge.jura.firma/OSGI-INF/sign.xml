@@ -3,16 +3,34 @@
 	xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
 	activate="activate"
 	deactivate="deactivate"
+	modified="updated"
 	name="iot.challenge.jura.firma.sign">
 
 	<implementation class="iot.challenge.jura.firma.service.provider.sign.SignServiceProvider"/>
 
 	<service>
 		<provide interface="iot.challenge.jura.firma.service.SignService"/>
+		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
 	</service>
 
 	<property
 		name="service.pid"
 		value="iot.challenge.jura.firma.sign"/>
+
+	<reference
+		bind="setCommandService"
+		unbind="unsetCommandService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.command.CommandService"
+		name="CommandService"
+		policy="static" />
+
+	<reference
+		name="ConfigurationService"
+		policy="static"
+		bind="setConfigurationService"
+		unbind="unsetConfigurationService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.configuration.ConfigurationService"/>
 
 </scr:component>

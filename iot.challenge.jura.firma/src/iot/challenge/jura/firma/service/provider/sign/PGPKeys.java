@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.Security;
@@ -35,6 +36,8 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
+import org.eclipse.kura.KuraException;
+import org.eclipse.kura.command.CommandService;
 
 import static java.text.MessageFormat.*;
 
@@ -53,9 +56,6 @@ public class PGPKeys {
 	public static final String KEY_SECRET = format(KEY_TEMPLATE, "secret");
 	public static final String KEY_PUBLIC = format(KEY_TEMPLATE, "public");
 
-	protected static final String IDENTITY = "jura";
-	protected static final String PASS = "jura";
-
 	protected static final String ALGORITHM = "RSA";
 	protected static final String PROVIDER = "BC";
 
@@ -65,17 +65,26 @@ public class PGPKeys {
 
 	protected static final int CERTIFICATION_LEVEL = PGPSignature.DEFAULT_CERTIFICATION;
 
-	protected static PGPKeys instance = new PGPKeys();
-
+	protected CommandService commandService;
+	protected Options options;
 	protected PGPSecretKey secretKey;
 	protected PGPPublicKey publicKey;
 
-	private PGPKeys() {
-		initializeKeys();
+	static {
+		Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
+		Security.addProvider(new BouncyCastleProvider());
 	}
 
-	public static PGPKeys getInstance() {
-		return instance;
+	protected PGPKeys() {
+		super();
+	}
+
+	public static PGPKeys build(CommandService commandService, Options options) throws KuraException {
+		PGPKeys result = new PGPKeys();
+		result.commandService = commandService;
+		result.options = options;
+		result.initializeKeys();
+		return result;
 	}
 
 	public PGPSecretKey getSecretKey() {
@@ -86,15 +95,23 @@ public class PGPKeys {
 		return publicKey;
 	}
 
-	protected void initializeKeys() {
-		generate(IDENTITY, PASS);
+	protected void initializeKeys() throws KuraException {
+		boolean send = generateKeysIfNecessary(options);
+
 		secretKey = readSecretKey(KEY_SECRET);
 		publicKey = readPublicKey(KEY_PUBLIC);
+
+		if (send)
+			sendKeys();
+
 	}
 
-	protected static void generate(String identity, String pass) {
-		if (!exists())
-			regenerate(identity, pass);
+	protected static boolean generateKeysIfNecessary(Options options) {
+		if (options.isGenerate() && !exists()) {
+			generate(options.getIdentity(), options.getPass());
+			return true;
+		}
+		return false;
 	}
 
 	protected static boolean exists() {
@@ -105,9 +122,8 @@ public class PGPKeys {
 				.isPresent();
 	}
 
-	protected static void regenerate(String identity, String pass) {
+	protected static void generate(String identity, String pass) {
 		try {
-			Security.addProvider(new BouncyCastleProvider());
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);
 			kpg.initialize(1024);
 			new File(FOLDER).mkdirs();
@@ -162,6 +178,20 @@ public class PGPKeys {
 				null, // unhashed packets to be added to the certification
 				certificationSignerBuilder, // certification signer builder
 				keyEncryptor); // Key encryptor
+	}
+
+	protected void sendKeys() throws KuraException {
+		sendKeys(
+				commandService,
+				Paths.get(PGPKeys.KEY_PUBLIC).toFile().getAbsolutePath(),
+				publicKey.getKeyID());
+	}
+
+	protected static void sendKeys(CommandService commandService, String key, long id) throws KuraException {
+		commandService.execute("gpg --import --armor " + key);
+		commandService.execute("dpkg -l | grep -qw dirmngr || aptitude install dirmngr");
+		commandService.execute("gpg --send-keys " + Long.toHexString(id));
+		commandService.execute("gpg --yes --batch --delete-keys " + Long.toHexString(id) + " -y");
 	}
 
 	protected static PGPSecretKey readSecretKey(String keyFile) {
