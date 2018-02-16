@@ -1,0 +1,36 @@
+.logo {
+	height: 35px;
+	width: auto;
+	content: url("./../img/firma_white.png");
+	margin-right: 5px;
+	float: left;
+}
+
+.site-wrapper-inner {
+	padding-top: 9rem;
+	padding-bottom: 5rem;
+	height: 100%;
+}
+
+.main-inner, .main-inner .main-container {
+	height: 100%;
+}
+
+.firma {
+	height: 100%
+}
+
+.firma .container {
+	margin-bottom: 1.2rem;
+}
+
+.firma-block span h6 {
+	display: inline-block;
+}
+
+.submit-form {
+	padding: 1.5rem;
+	margin: 0;
+	border: solid #343a40;
+	border-width: .1rem;
+}

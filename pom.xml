@@ -27,6 +27,7 @@
 		<module>iot.challenge.jura.jota</module>
 		<module>iot.challenge.jura.pgp</module>
 		<module>iot.challenge.jura.firma</module>
+		<module>iot.challenge.jura.firma.web</module>
 		<module>iot.challenge.jura.firma.feature</module>
 	</modules>
 
