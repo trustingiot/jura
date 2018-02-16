@@ -18,4 +18,18 @@
 		bind="setHttpService"
 		unbind="unsetHttpService"/>
 
+	<reference
+		name="IOTAService"
+		interface="iot.challenge.jura.firma.service.IOTAService"
+		cardinality="1..1"
+		bind="setIOTAService"
+		unbind="unsetIOTAService"/>
+
+	<reference
+		name="SignService"
+		interface="iot.challenge.jura.firma.service.SignService"
+		cardinality="1..1"
+		bind="setSignService"
+		unbind="unsetSignService"/>
+
 </scr:component>

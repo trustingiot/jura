@@ -3,6 +3,7 @@ package iot.challenge.jura.firma.service.provider.sign;
 import iot.challenge.jura.firma.service.SignService;
 import iot.challenge.jura.util.trait.ActionRecorder;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -156,5 +157,42 @@ public class SignServiceProvider implements SignService, ActionRecorder, Configu
 		result.add("body", body);
 		result.add("sign", signJSON);
 		return result;
+	}
+
+	@Override
+	public boolean validate(JsonObject sign) {
+		try {
+			if (sign == null)
+				return false;
+
+			JsonObject bodyJSON = sign.get("body").asObject();
+			JsonObject signJSON = sign.get("sign").asObject();
+
+			String key = signJSON.get("key").asString();
+
+			String message = recreateSignMessage(
+					bodyJSON.toString(),
+					signJSON.get("hash").asString(),
+					signJSON.get("value").asString());
+
+			return pgp.verify(message, key);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	protected static String recreateSignMessage(String body, String hash, String sign) {
+		return MessageFormat.format("-----BEGIN PGP SIGNED MESSAGE-----\n" +
+				"Hash: {0}\n" +
+				"\n" +
+				"{1}\n" +
+				"-----BEGIN PGP SIGNATURE-----\n" +
+				"Version: BCPG v1.59\n" +
+				"\n" +
+				"{2}" +
+				"-----END PGP SIGNATURE-----",
+				hash,
+				body,
+				sign);
 	}
 }

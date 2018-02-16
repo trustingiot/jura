@@ -42,4 +42,14 @@ public interface SignService {
 	 * @return Signed JSON
 	 */
 	public JsonObject sign(JsonObject body);
+
+	/**
+	 * Validates the signature
+	 * 
+	 * @param sign
+	 *            Signed object
+	 *
+	 * @return True if the signature is valid, False otherwise
+	 */
+	public boolean validate(JsonObject sign);
 }

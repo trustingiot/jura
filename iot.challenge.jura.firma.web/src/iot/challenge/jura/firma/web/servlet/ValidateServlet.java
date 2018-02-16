@@ -11,6 +11,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import iot.challenge.jura.firma.web.service.WebService;
 import iot.challenge.jura.util.trait.Loggable;
 
 /**
@@ -29,13 +30,13 @@ public class ValidateServlet extends HttpServlet implements Loggable {
 		if (message != null) {
 			String transaction = readJsonString(message, TRANSACTION);
 			if (transaction != null) {
-				// TODO Obtain transaction message
-				// TODO Parse message
-				// TODO Validate message
-				// TODO Obtain key
-				// TODO Validate sign
-				// TODO Generate response
-				// TODO Visualize response
+				JsonObject json = WebService.iotaService.readMessage(transaction);
+				if (json != null) {
+					if (WebService.signService.validate(json)) {
+						// TODO Generate response
+						// TODO Visualize response
+					}
+				}
 			}
 		}
 	}

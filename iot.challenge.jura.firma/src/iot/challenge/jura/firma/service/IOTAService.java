@@ -2,6 +2,8 @@ package iot.challenge.jura.firma.service;
 
 import java.util.function.Consumer;
 
+import com.eclipsesource.json.JsonObject;
+
 import jota.dto.response.SendTransferResponse;
 import jota.model.Transfer;
 
@@ -93,4 +95,15 @@ public interface IOTAService {
 	 *            Transfer
 	 */
 	void transfer(Transfer transfer);
+
+	/**
+	 * Read message from IOTA transaction
+	 * 
+	 * @param hash
+	 *            IOTA transaction hash
+	 *
+	 * @return Message or null if the transaction does not contain a valid json
+	 *         message
+	 */
+	JsonObject readMessage(String hash);
 }

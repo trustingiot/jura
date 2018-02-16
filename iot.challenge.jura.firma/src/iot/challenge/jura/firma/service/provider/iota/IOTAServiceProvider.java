@@ -6,6 +6,7 @@ import jota.IotaAPI;
 import jota.IotaLocalPoW;
 import jota.dto.response.SendTransferResponse;
 import jota.error.ArgumentException;
+import jota.model.Transaction;
 import jota.model.Transfer;
 import jota.pow.SpongeFactory;
 import jota.utils.IotaAPIUtils;
@@ -22,6 +23,9 @@ import java.util.function.Consumer;
 
 import org.eclipse.kura.configuration.ConfigurableComponent;
 import org.osgi.service.component.ComponentContext;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
 
 import cfb.pearldiver.PearlDiver;
 import cfb.pearldiver.PearlDiverLocalPoW;
@@ -296,5 +300,28 @@ public class IOTAServiceProvider implements IOTAService, ActionRecorder, Configu
 		info("Transaction https://thetangle.org/transaction/{} completed ({} seconds)",
 				transfer.getTransactions().get(0).getHash(),
 				(System.currentTimeMillis() - time) / 1000);
+	}
+
+	@Override
+	public JsonObject readMessage(String hash) {
+		if (hash != null) {
+			try {
+				List<Transaction> transactions = api.findTransactionsObjectsByHashes(new String[] { hash });
+				if (!transactions.isEmpty()) {
+					Transaction transaction = transactions.get(0);
+					String message = transaction.getSignatureFragments();
+					// FIXME transaction.getSignatureFragments().length == 2187 (it must be 2188)
+					// bug in JOTA?
+					while (message.length() < 2188)
+						message += '9';
+					message = TrytesConverter.toString(message);
+					return Json.parse(message.trim()).asObject();
+				}
+			} catch (Exception e) {
+				// Nothing to do
+			}
+		}
+
+		return null;
 	}
 }

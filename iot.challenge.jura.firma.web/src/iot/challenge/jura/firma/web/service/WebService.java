@@ -1,5 +1,7 @@
 package iot.challenge.jura.firma.web.service;
 
+import iot.challenge.jura.firma.service.IOTAService;
+import iot.challenge.jura.firma.service.SignService;
 import iot.challenge.jura.firma.web.servlet.ValidateServlet;
 import iot.challenge.jura.util.trait.ActionRecorder;
 
@@ -47,12 +49,32 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 	//
 	protected HttpService httpService;
 
+	// FIXME guice?
+	public static IOTAService iotaService;
+	public static SignService signService;
+
 	protected void setHttpService(HttpService service) {
 		httpService = service;
 	}
 
 	protected void unsetHttpService(HttpService service) {
 		httpService = null;
+	}
+
+	protected void setIOTAService(IOTAService service) {
+		iotaService = service;
+	}
+
+	protected void unsetIOTAService(IOTAService service) {
+		iotaService = null;
+	}
+
+	protected void setSignService(SignService service) {
+		signService = service;
+	}
+
+	protected void unsetSignService(SignService service) {
+		signService = null;
 	}
 
 	////
