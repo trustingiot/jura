@@ -1,4 +1,4 @@
-package iot.challenge.jura.firma.service.provider.transferlocation;
+package iot.challenge.jura.firma.service.provider.transfer;
 
 import java.util.HashMap;
 import java.util.Map;

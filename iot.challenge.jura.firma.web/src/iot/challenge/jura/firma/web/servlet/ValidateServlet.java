@@ -29,7 +29,6 @@ public class ValidateServlet extends HttpServlet implements Loggable {
 		if (message != null) {
 			String transaction = readJsonString(message, TRANSACTION);
 			if (transaction != null) {
-				// TODO TransferLocationService -> TransferService
 				// TODO Obtain transaction message
 				// TODO Parse message
 				// TODO Validate message

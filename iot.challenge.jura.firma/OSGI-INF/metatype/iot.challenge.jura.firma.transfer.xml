@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
 	localization="en_us">
-	<OCD id="iot.challenge.jura.firma.transfer.location" name="Transfer location service"
+	<OCD id="iot.challenge.jura.firma.transfer" name="Transfer service"
 		description="Service to transfer locations to IOTA">
 
-		<Icon resource="resources/icons/transfer-location.png" size="32" />
+		<Icon resource="resources/icons/transfer.png" size="32" />
 
 		<AD id="enable"
 			name="Enable"
@@ -40,7 +40,7 @@
 
 	</OCD>
 
-	<Designate pid="iot.challenge.jura.firma.transfer.location">
-		<Object ocdref="iot.challenge.jura.firma.transfer.location"/>
+	<Designate pid="iot.challenge.jura.firma.transfer">
+		<Object ocdref="iot.challenge.jura.firma.transfer"/>
 	</Designate>
 </MetaData>

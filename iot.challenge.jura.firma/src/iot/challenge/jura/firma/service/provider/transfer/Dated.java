@@ -1,4 +1,4 @@
-package iot.challenge.jura.firma.service.provider.transferlocation;
+package iot.challenge.jura.firma.service.provider.transfer;
 
 public class Dated<T> implements Comparable<Dated<T>> {
 	final Long time;

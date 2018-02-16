@@ -1,4 +1,4 @@
-package iot.challenge.jura.firma.service.provider.transferlocation;
+package iot.challenge.jura.firma.service.provider.transfer;
 
 public class Candidate<T> implements Comparable<Candidate<T>> {
 	final Integer level;

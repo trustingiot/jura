@@ -1,7 +1,7 @@
-package iot.challenge.jura.firma.service.provider.transferlocation;
+package iot.challenge.jura.firma.service.provider.transfer;
 
 import iot.challenge.jura.firma.service.SignService;
-import iot.challenge.jura.firma.service.TransferLocationService;
+import iot.challenge.jura.firma.service.TransferService;
 import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.ubica.installation.Point;
 import iot.challenge.jura.util.trait.ActionRecorder;
@@ -27,16 +27,16 @@ import org.osgi.service.component.ComponentContext;
 import com.eclipsesource.json.JsonObject;
 
 /**
- * TransferLocationService provider
+ * TransferService's provider
  */
-public class TransferLocationServiceProvider implements TransferLocationService, ActionRecorder, ConfigurableComponent {
+public class TransferServiceProvider implements TransferService, ActionRecorder, ConfigurableComponent {
 
 	////
 	//
 	// Action recorder
 	//
 	//
-	public static final String ID = "iot.challenge.jura.firma.transfer.location";
+	public static final String ID = "iot.challenge.jura.firma.transfer";
 
 	@Override
 	public String getID() {

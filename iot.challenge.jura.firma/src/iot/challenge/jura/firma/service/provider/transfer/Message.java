@@ -1,4 +1,4 @@
-package iot.challenge.jura.firma.service.provider.transferlocation;
+package iot.challenge.jura.firma.service.provider.transfer;
 
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
