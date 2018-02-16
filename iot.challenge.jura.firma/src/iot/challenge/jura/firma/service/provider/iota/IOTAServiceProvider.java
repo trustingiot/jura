@@ -1,6 +1,6 @@
-package iot.challenge.jura.firma.service.provider.transfer;
+package iot.challenge.jura.firma.service.provider.iota;
 
-import iot.challenge.jura.firma.service.TransferService;
+import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.util.trait.ActionRecorder;
 import jota.IotaAPI;
 import jota.IotaLocalPoW;
@@ -27,16 +27,16 @@ import cfb.pearldiver.PearlDiver;
 import cfb.pearldiver.PearlDiverLocalPoW;
 
 /**
- * TransferService provider
+ * IOTAService provider
  */
-public class TransferServiceProvider implements TransferService, ActionRecorder, ConfigurableComponent {
+public class IOTAServiceProvider implements IOTAService, ActionRecorder, ConfigurableComponent {
 
 	////
 	//
 	// Action recorder
 	//
 	//
-	public static final String ID = "iot.challenge.jura.firma.transfer";
+	public static final String ID = "iot.challenge.jura.firma.iota";
 
 	@Override
 	public String getID() {

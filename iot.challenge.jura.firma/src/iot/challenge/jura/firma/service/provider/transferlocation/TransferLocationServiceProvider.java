@@ -2,7 +2,7 @@ package iot.challenge.jura.firma.service.provider.transferlocation;
 
 import iot.challenge.jura.firma.service.SignService;
 import iot.challenge.jura.firma.service.TransferLocationService;
-import iot.challenge.jura.firma.service.TransferService;
+import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.ubica.installation.Point;
 import iot.challenge.jura.util.trait.ActionRecorder;
 import jota.dto.response.SendTransferResponse;
@@ -65,7 +65,7 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 	//
 	//
 	protected LocationService locationService;
-	protected TransferService transferService;
+	protected IOTAService iotaService;
 	protected SignService signService;
 
 	protected void setLocationService(LocationService service) {
@@ -76,12 +76,12 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 		locationService = null;
 	}
 
-	protected void setTransferService(TransferService service) {
-		transferService = service;
+	protected void setIOTAService(IOTAService service) {
+		iotaService = service;
 	}
 
-	protected void unsetTransferService(TransferService service) {
-		transferService = null;
+	protected void unsetIOTAService(IOTAService service) {
+		iotaService = null;
 	}
 
 	protected void setSignService(SignService service) {
@@ -130,7 +130,7 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 	protected void stopWorkers() {
 		synchronized (this) {
 			if (transferHandle != null) {
-				transferService.interrupt();
+				iotaService.interrupt();
 				transferHandle.cancel(true);
 				transferHandle = null;
 			}
@@ -215,7 +215,7 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 	}
 
 	protected void rescheduleTransfer(boolean asap) {
-		if (transferService.ready()) {
+		if (iotaService.ready()) {
 			if (transferHandle != null) {
 				transferHandle.cancel(true);
 				transferHandle = null;
@@ -243,7 +243,7 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 
 	protected void transfer() {
 		synchronized (this) {
-			if (transferService.ready()) {
+			if (iotaService.ready()) {
 				transferASAP = false;
 				Dated<Message> location = selectLocationToTransfer();
 				if (location != null) {
@@ -311,7 +311,7 @@ public class TransferLocationServiceProvider implements TransferLocationService,
 	protected void transferLocation(Dated<Message> message) {
 		String signedMessage = buildMessage(message);
 		if (signedMessage != null) {
-			transferService.transfer(signedMessage, (r) -> doAfterTransfer(message.element, r));
+			iotaService.transfer(signedMessage, (r) -> doAfterTransfer(message.element, r));
 		} else {
 			error("The location could not be signed");
 			rescheduleTransfer(true);

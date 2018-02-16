@@ -26,11 +26,11 @@
 		policy="static" />
 
 	<reference
-		bind="setTransferService"
-		unbind="unsetTransferService"
+		bind="setIOTAService"
+		unbind="unsetIOTAService"
 		cardinality="1..1"
-		interface="iot.challenge.jura.firma.service.TransferService"
-		name="TransferService"
+		interface="iot.challenge.jura.firma.service.IOTAService"
+		name="IOTAService"
 		policy="static" />
 
 	<reference

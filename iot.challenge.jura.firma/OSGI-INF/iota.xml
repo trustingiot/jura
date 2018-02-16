@@ -4,17 +4,17 @@
 	activate="activate"
 	deactivate="deactivate"
 	modified="updated"
-	name="iot.challenge.jura.firma.transfer">
+	name="iot.challenge.jura.firma.iota">
 
-	<implementation class="iot.challenge.jura.firma.service.provider.transfer.TransferServiceProvider"/>
+	<implementation class="iot.challenge.jura.firma.service.provider.iota.IOTAServiceProvider"/>
 
 	<service>
-		<provide interface="iot.challenge.jura.firma.service.TransferService"/>
+		<provide interface="iot.challenge.jura.firma.service.IOTAService"/>
 		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
 	</service>
 
 	<property
 		name="service.pid"
-		value="iot.challenge.jura.firma.transfer"/>
+		value="iot.challenge.jura.firma.iota"/>
 
 </scr:component>

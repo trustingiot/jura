@@ -1,9 +1,9 @@
-package iot.challenge.jura.firma.service.provider.transfer;
+package iot.challenge.jura.firma.service.provider.iota;
 
 import java.util.Map;
 
 /**
- * TransferService's options
+ * IOTAService's options
  */
 public class Options extends iot.challenge.jura.util.Options {
 

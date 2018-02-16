@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
 	localization="en_us">
-	<OCD id="iot.challenge.jura.firma.transfer" name="Transfer service"
-		description="Service to transfer information to IOTA">
+	<OCD id="iot.challenge.jura.firma.iota" name="IOTA service"
+		description="Service to interact with IOTA">
 
 		<Icon resource="resources/icons/iota.png" size="32" />
 
@@ -40,7 +40,7 @@
 
 	</OCD>
 
-	<Designate pid="iot.challenge.jura.firma.transfer">
-		<Object ocdref="iot.challenge.jura.firma.transfer"/>
+	<Designate pid="iot.challenge.jura.firma.iota">
+		<Object ocdref="iot.challenge.jura.firma.iota"/>
 	</Designate>
 </MetaData>

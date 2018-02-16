@@ -6,9 +6,9 @@ import jota.dto.response.SendTransferResponse;
 import jota.model.Transfer;
 
 /**
- * Service to transfer information to IOTA
+ * Service to interact with IOTA
  */
-public interface TransferService {
+public interface IOTAService {
 
 	/**
 	 * Reports if the service is sending a transfer
