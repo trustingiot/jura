@@ -12,6 +12,10 @@ import jota.model.Transfer;
  */
 public interface IOTAService {
 
+	public static final int READ_REJECT_API_EXCEPTION = 0;
+	public static final int READ_REJECT_NOT_FOUND = 1;
+	public static final int READ_REJECT_PARSE_EXCEPTION = 2;
+
 	/**
 	 * Reports if the service is sending a transfer
 	 *

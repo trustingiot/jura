@@ -1,5 +1,5 @@
 .logo {
-	height: 35px;
+	height: 29px;
 	width: auto;
 	content: url("./../img/firma_white.png");
 	margin-right: 5px;
@@ -33,4 +33,39 @@
 	margin: 0;
 	border: solid #343a40;
 	border-width: .1rem;
+}
+
+.validation-result h6 {
+	float: left;
+	margin-bottom:0.1rem;
+}
+
+.loading {
+	content: url("./../img/loading.gif");
+}
+
+.loading-active {
+	height: 17px;
+	padding-left: 5px;
+	display: inline-block;
+}
+
+.loading-inactive {
+	display: none;
+}
+
+.validateResultTitle {
+	display: inline-block;
+	padding-bottom: 0rem;
+}
+
+.blockquote {
+	border-left: 5px solid #eee;
+	padding-left: 0.5rem;
+	margin-left: 1.5rem;
+	font-size: 1rem;
+}
+
+.sign-header {
+	margin-bottom: 0.1rem;
 }

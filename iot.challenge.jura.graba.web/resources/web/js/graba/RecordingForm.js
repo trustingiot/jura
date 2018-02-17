@@ -26,9 +26,13 @@ define( ["react"], function( React ) {
 			} );
 		}
 
+		handleSubmit( event ) {
+			event.preventDefault();
+		}
+
 		render() {
 			return React.createElement( 'div', { className: 'container submit-form' },
-				React.createElement( 'form', null,
+				React.createElement( 'form', { onSumbit: this.handleSubmit },
 					React.createElement( 'div', { className: 'form-group row' },
 						this.renderInput( 'startTime', 'Start time', 'datetime-local', '' ),
 						this.renderInput( 'duration', 'Duration', 'number', 'seconds' )

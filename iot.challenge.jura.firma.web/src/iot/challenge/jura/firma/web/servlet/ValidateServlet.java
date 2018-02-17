@@ -1,6 +1,7 @@
 package iot.challenge.jura.firma.web.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +12,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 
+import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.firma.web.service.WebService;
 import iot.challenge.jura.util.trait.Loggable;
 
@@ -32,13 +34,45 @@ public class ValidateServlet extends HttpServlet implements Loggable {
 			if (transaction != null) {
 				JsonObject json = WebService.iotaService.readMessage(transaction);
 				if (json != null) {
-					if (WebService.signService.validate(json)) {
-						// TODO Generate response
-						// TODO Visualize response
+					if (json.get("reject") == null) {
+						message.add("sign", json);
+						if (!WebService.signService.validate(json))
+							message.add("reject",
+									"Invalid signature. The transaction contains an intelligible message, but not a valid signature.");
+					} else {
+						int cause = json.get("reject").asInt();
+						String m = "";
+						switch (cause) {
+						case IOTAService.READ_REJECT_API_EXCEPTION:
+							m = "Connection problem. The transaction query failed.";
+							break;
+
+						case IOTAService.READ_REJECT_NOT_FOUND:
+							m = "Not found. It has been moved, is no longer available or has never existed.";
+							break;
+
+						case IOTAService.READ_REJECT_PARSE_EXCEPTION:
+							m = "Invalid message. The transaction does not contain an intelligible message for Jura.";
+							break;
+
+						default:
+							m = "Unknown failure. Validation failed (and we do not know why).";
+						}
+
+						message.add("reject", m);
 					}
 				}
 			}
+
 		}
+		generateResponseMessage(response, message);
+	}
+
+	protected static void generateResponseMessage(HttpServletResponse response, JsonObject message) throws IOException {
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		out.print(message);
+		out.flush();
 	}
 
 	protected static JsonObject readJson(HttpServletRequest request) throws IOException {

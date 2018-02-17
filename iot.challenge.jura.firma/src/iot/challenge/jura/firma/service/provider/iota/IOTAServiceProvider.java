@@ -305,20 +305,34 @@ public class IOTAServiceProvider implements IOTAService, ActionRecorder, Configu
 	@Override
 	public JsonObject readMessage(String hash) {
 		if (hash != null) {
+			List<Transaction> transactions;
 			try {
-				List<Transaction> transactions = api.findTransactionsObjectsByHashes(new String[] { hash });
-				if (!transactions.isEmpty()) {
-					Transaction transaction = transactions.get(0);
-					String message = transaction.getSignatureFragments();
-					// FIXME transaction.getSignatureFragments().length == 2187 (it must be 2188)
-					// bug in JOTA?
-					while (message.length() < 2188)
-						message += '9';
-					message = TrytesConverter.toString(message);
-					return Json.parse(message.trim()).asObject();
-				}
+				transactions = api.findTransactionsObjectsByHashes(new String[] { hash });
 			} catch (Exception e) {
-				// Nothing to do
+				JsonObject result = new JsonObject();
+				result.add("reject", READ_REJECT_API_EXCEPTION);
+				return result;
+			}
+
+			Transaction transaction = transactions.get(0);
+			if (!hash.equals(transaction.getHash())) {
+				JsonObject result = new JsonObject();
+				result.add("reject", READ_REJECT_NOT_FOUND);
+				return result;
+			}
+
+			try {
+				String message = transaction.getSignatureFragments();
+				// FIXME transaction.getSignatureFragments().length == 2187 (it must be 2188)
+				// bug in JOTA?
+				while (message.length() < 2188)
+					message += '9';
+				message = TrytesConverter.toString(message);
+				return Json.parse(message.trim()).asObject();
+			} catch (Exception e) {
+				JsonObject result = new JsonObject();
+				result.add("reject", READ_REJECT_PARSE_EXCEPTION);
+				return result;
 			}
 		}
 

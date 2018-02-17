@@ -13,13 +13,17 @@ define( ["react"], function( React ) {
 		submitValidation() {
 			this.props.post( 'validate', {
 				transaction: this.transaction.value
-			} );
+			}, this.props.onValidateResult );
+		}
+
+		handleSubmit( event ) {
+			event.preventDefault();
 		}
 
 		render() {
 			return React.createElement( 'div', { className: 'container submit-form' },
-				React.createElement( 'form', null,
-					React.createElement( 'div', { className: 'form-group row col-sm-12' },
+				React.createElement( 'form', { onSubmit: this.handleSubmit },
+					React.createElement( 'div', { className: 'form-group table-row' },
 						this.renderInput( 'transaction', 'text', 'Transaction id' )
 					),
 					React.createElement( 'button', { type: 'submit', className: 'btn btn-dark btn-block', onClick: this.submitValidation }, 'Validate' )
