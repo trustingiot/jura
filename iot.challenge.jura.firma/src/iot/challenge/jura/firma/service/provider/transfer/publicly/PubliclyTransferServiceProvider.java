@@ -1,7 +1,7 @@
-package iot.challenge.jura.firma.service.provider.transfer;
+package iot.challenge.jura.firma.service.provider.transfer.publicly;
 
 import iot.challenge.jura.firma.service.SignService;
-import iot.challenge.jura.firma.service.TransferService;
+import iot.challenge.jura.firma.service.PubliclyTransferService;
 import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.ubica.installation.Point;
 import iot.challenge.jura.util.trait.ActionRecorder;
@@ -27,16 +27,16 @@ import org.osgi.service.component.ComponentContext;
 import com.eclipsesource.json.JsonObject;
 
 /**
- * TransferService's provider
+ * PubliclyTransferService's provider
  */
-public class TransferServiceProvider implements TransferService, ActionRecorder, ConfigurableComponent {
+public class PubliclyTransferServiceProvider implements PubliclyTransferService, ActionRecorder, ConfigurableComponent {
 
 	////
 	//
 	// Action recorder
 	//
 	//
-	public static final String ID = "iot.challenge.jura.firma.transfer";
+	public static final String ID = "iot.challenge.jura.firma.transfer.publicly";
 
 	@Override
 	public String getID() {
@@ -339,7 +339,7 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 		String hash = (response != null) ? response.getTransactions().get(0).getHash() : null;
 
 		if (response != null) {
-			info("Location {} transferred -> https://thetangle.org/transaction/{}", location, hash);
+			debug("Location {} transferred -> https://thetangle.org/transaction/{}", location, hash);
 
 		} else {
 			error("The transfer of the location {} to IOTA failed", location);

@@ -1,6 +1,6 @@
-define( ["react", "js/firma/ValidateForm", "js/firma/ValidateResult"],
+define( ["react", "js/public/ValidateForm", "js/public/ValidateResult"],
 	function( React, ValidateForm, ValidateResult ) {
-		return class Firma extends React.Component {
+		return class Validate extends React.Component {
 			constructor( props ) {
 				super( props );
 

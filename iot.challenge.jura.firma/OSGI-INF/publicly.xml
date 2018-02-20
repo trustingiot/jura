@@ -4,18 +4,18 @@
 	activate="activate"
 	deactivate="deactivate"
 	modified="updated"
-	name="iot.challenge.jura.firma.transfer">
+	name="iot.challenge.jura.firma.transfer.publicly">
 
-	<implementation class="iot.challenge.jura.firma.service.provider.transfer.TransferServiceProvider"/>
+	<implementation class="iot.challenge.jura.firma.service.provider.transfer.publicly.PubliclyTransferServiceProvider"/>
 
 	<service>
-		<provide interface="iot.challenge.jura.firma.service.TransferService"/>
+		<provide interface="iot.challenge.jura.firma.service.PubliclyTransferService"/>
 		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
 	</service>
 
 	<property
 		name="service.pid"
-		value="iot.challenge.jura.firma.transfer"/>
+		value="iot.challenge.jura.firma.transfer.publicly"/>
 
 	<reference
 		bind="setLocationService"
