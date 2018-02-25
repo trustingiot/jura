@@ -13,6 +13,7 @@ Import-Package: com.eclipsesource.json;version="0.9.4",
  iot.challenge.jura.util.trait,
  javax.servlet;version="3.1.0",
  javax.servlet.http;version="3.1.0",
+ jota.model,
  org.eclipse.kura.configuration;version="1.1.2",
  org.osgi.service.component;version="1.2.0",
  org.osgi.service.http;version="1.2.1"

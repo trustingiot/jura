@@ -16,15 +16,15 @@
 	height: 100%;
 }
 
-.firma, .admin {
+.firma, .admin, .device {
 	height: 100%
 }
 
-.firma .container, .admin .container {
+.firma .container, .admin .container, .device .container {
 	margin-bottom: 1.2rem;
 }
 
-.firma-block span h6, .admin-block span h6 {
+.firma-block span h6, .admin-block span h6, .device-block span h6 {
 	display: inline-block;
 }
 
@@ -43,7 +43,7 @@
 	padding-bottom: 0rem;
 }
 
-.validation-result h6 {
+.validation-result h6, .device-result h6 {
 	float: left;
 	margin-bottom: 0.1rem;
 }
@@ -62,7 +62,7 @@
 	display: none;
 }
 
-.validateResultTitle {
+.validateResultTitle, .deviceResultTitle {
 	display: inline-block;
 	padding-bottom: 0rem;
 }
@@ -93,4 +93,21 @@
 
 .field-value-none {
 	color: gray;
+}
+
+.transaction-body {
+	background: #EEEEEE;
+	padding: 0.5rem;
+	border: 1px solid;
+	margin-top: .1rem;
+	margin-bottom: 1rem;
+	margin-left: 1rem;
+}
+
+.transaction-body .field {
+	margin-bottom: 0rem;
+}
+
+.transaction-body-inactive {
+	display: none;
 }

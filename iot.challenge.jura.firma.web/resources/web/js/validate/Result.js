@@ -36,10 +36,6 @@ define( ["react"], function( React ) {
 					React.createElement( 'blockquote', { key: 'result', className: 'blockquote' },
 						React.createElement( 'p', { key: 'reject', className: 'sign-header' }, reject ) )
 					: this.renderSign( sign ) );
-
-
-
-			;
 		}
 
 		renderSign( sign ) {

@@ -3,6 +3,7 @@ package iot.challenge.jura.firma.web.service;
 import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.firma.service.SignService;
 import iot.challenge.jura.firma.web.servlet.DIWServlet;
+import iot.challenge.jura.firma.web.servlet.TransactionsServlet;
 import iot.challenge.jura.firma.web.servlet.ValidateServlet;
 import iot.challenge.jura.util.trait.ActionRecorder;
 
@@ -166,6 +167,7 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 
 		servlets.put("/firma/validate", new ValidateServlet());
 		servlets.put("/firma/diw", new DIWServlet());
+		servlets.put("/firma/transactions", new TransactionsServlet());
 
 		for (String alias : servlets.keySet()) {
 			httpService.registerServlet(alias, servlets.get(alias), null, context);

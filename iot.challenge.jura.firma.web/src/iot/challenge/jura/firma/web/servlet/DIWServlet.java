@@ -21,7 +21,7 @@ import iot.challenge.jura.util.trait.Loggable;
  */
 public class DIWServlet extends HttpServlet implements Loggable {
 
-	private static final long serialVersionUID = -6477462392686027274L;
+	private static final long serialVersionUID = -557716762897875821L;
 
 	public static final String DEVICE = "device";
 	public static final String SEED = "seed";
