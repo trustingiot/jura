@@ -1,5 +1,5 @@
-define( ["react", "js/public/ValidateForm", "js/public/ValidateResult"],
-	function( React, ValidateForm, ValidateResult ) {
+define( ["react", "js/anonymously/ValidateForm", "js/validate/Result"],
+	function( React, ValidateForm, Result ) {
 		return class Validate extends React.Component {
 			constructor( props ) {
 				super( props );
@@ -41,7 +41,7 @@ define( ["react", "js/public/ValidateForm", "js/public/ValidateResult"],
 			render() {
 				return React.createElement( 'div', { className: 'firma' },
 					this.createBlock( 'Validate', ValidateForm, { onValidateResult: this.updateResult } ),
-					this.createBlock( 'Result', ValidateResult, { processing: this.state.processing, validationResult: this.state.validationResult } )
+					this.createBlock( 'Result', Result, { processing: this.state.processing, validationResult: this.state.validationResult } )
 				);
 			}
 		};

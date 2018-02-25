@@ -1,4 +1,4 @@
-package iot.challenge.jura.firma.service.provider.transfer.publicly;
+package iot.challenge.jura.firma.service.provider.transfer;
 
 public class Dated<T> implements Comparable<Dated<T>> {
 	final Long time;
@@ -7,6 +7,14 @@ public class Dated<T> implements Comparable<Dated<T>> {
 	public Dated(Long time, T element) {
 		this.time = time;
 		this.element = element;
+	}
+
+	public Long getTime() {
+		return time;
+	}
+
+	public T getElement() {
+		return element;
 	}
 
 	@Override

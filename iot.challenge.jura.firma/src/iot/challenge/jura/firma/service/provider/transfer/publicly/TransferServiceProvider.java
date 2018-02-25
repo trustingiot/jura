@@ -1,7 +1,12 @@
 package iot.challenge.jura.firma.service.provider.transfer.publicly;
 
 import iot.challenge.jura.firma.service.SignService;
-import iot.challenge.jura.firma.service.PubliclyTransferService;
+import iot.challenge.jura.firma.service.provider.transfer.Candidate;
+import iot.challenge.jura.firma.service.provider.transfer.Dated;
+import iot.challenge.jura.firma.service.provider.transfer.Message;
+import iot.challenge.jura.firma.service.provider.transfer.Options;
+import iot.challenge.jura.firma.service.provider.transfer.Rule;
+import iot.challenge.jura.firma.service.TransferService;
 import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.ubica.installation.Point;
 import iot.challenge.jura.util.trait.ActionRecorder;
@@ -27,9 +32,9 @@ import org.osgi.service.component.ComponentContext;
 import com.eclipsesource.json.JsonObject;
 
 /**
- * PubliclyTransferService's provider
+ * Provider for public transactions
  */
-public class PubliclyTransferServiceProvider implements PubliclyTransferService, ActionRecorder, ConfigurableComponent {
+public class TransferServiceProvider implements TransferService, ActionRecorder, ConfigurableComponent {
 
 	////
 	//
@@ -118,12 +123,16 @@ public class PubliclyTransferServiceProvider implements PubliclyTransferService,
 		transferASAP = false;
 		last = new HashMap<>();
 		buffer = new HashMap<>();
+		createOptions(properties);
+	}
+	
+	protected void createOptions(Map<String, Object> properties) {
 		options = new Options(properties);
 	}
 
 	protected void update(Map<String, Object> properties) {
 		stopWorkers();
-		options = new Options(properties);
+		createOptions(properties);
 		startWorkers();
 	}
 
@@ -170,7 +179,7 @@ public class PubliclyTransferServiceProvider implements PubliclyTransferService,
 			buffer.forEach((installation, installationLocations) -> {
 				Set<String> beaconsToRemove = new HashSet<>();
 				installationLocations.forEach((beacon, location) -> {
-					if (location.time < timeout)
+					if (location.getTime() < timeout)
 						beaconsToRemove.add(beacon);
 				});
 				beaconsToRemove.forEach(installationLocations::remove);
@@ -273,7 +282,7 @@ public class PubliclyTransferServiceProvider implements PubliclyTransferService,
 		}
 
 		Candidate<Message> candidate = candidates.poll();
-		return (candidate != null) ? candidate.dated : null;
+		return (candidate != null) ? candidate.getDated() : null;
 	}
 
 	protected Candidate<Message> createCandidate(String installation, String beacon) {
@@ -285,23 +294,23 @@ public class PubliclyTransferServiceProvider implements PubliclyTransferService,
 	protected Dated<Message> createDatedMessage(String installation, String beacon) {
 		Dated<Point> location = buffer.get(installation).get(beacon);
 		return new Dated<Message>(
-				location.time,
-				new Message(installation, beacon, location.element));
+				location.getTime(),
+				new Message(installation, beacon, location.getElement()));
 	}
 
 	protected void updateLast(Dated<Message> next) {
-		String i = next.element.getInstallation();
-		String d = next.element.getDevice();
+		String i = next.getElement().getInstallation();
+		String d = next.getElement().getDevice();
 
 		if (!last.containsKey(i))
 			last.put(i, new HashMap<>());
 
-		last.get(i).put(d, next.time);
+		last.get(i).put(d, next.getTime());
 	}
 
 	protected void removeFromBuffer(Dated<Message> next) {
-		String i = next.element.getInstallation();
-		String d = next.element.getDevice();
+		String i = next.getElement().getInstallation();
+		String d = next.getElement().getDevice();
 
 		buffer.get(i).remove(d);
 		if (buffer.get(i).isEmpty())
@@ -309,20 +318,25 @@ public class PubliclyTransferServiceProvider implements PubliclyTransferService,
 	}
 
 	protected void transferLocation(Dated<Message> message) {
-		String signedMessage = buildMessage(message);
-		if (signedMessage != null) {
-			iotaService.transfer(signedMessage, (r) -> doAfterTransfer(message.element, r));
+		String iotaMessage = buildMessage(message);
+		if (iotaMessage != null) {
+			iotaService.transfer(getAddress(message.getElement().getDevice()), iotaMessage,
+					(r) -> doAfterTransfer(message.getElement(), r));
 		} else {
-			error("The location could not be signed");
+			error("The location could not be sent");
 			rescheduleTransfer(true);
 		}
 	}
 
 	protected String buildMessage(Dated<Message> message) {
 		JsonObject body = new JsonObject();
-		body.add("timestamp", message.time);
-		body.add("location", message.element.toJson());
+		body.add("timestamp", message.getTime());
+		body.add("location", message.getElement().toJson());
 		return signService.sign(body).toString();
+	}
+
+	protected String getAddress(String device) {
+		return iotaService.getAddress();
 	}
 
 	protected void doAfterTransfer(Message message, SendTransferResponse response) {

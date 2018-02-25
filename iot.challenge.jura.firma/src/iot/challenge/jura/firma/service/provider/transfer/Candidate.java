@@ -1,4 +1,4 @@
-package iot.challenge.jura.firma.service.provider.transfer.publicly;
+package iot.challenge.jura.firma.service.provider.transfer;
 
 public class Candidate<T> implements Comparable<Candidate<T>> {
 	final Integer level;
@@ -7,6 +7,14 @@ public class Candidate<T> implements Comparable<Candidate<T>> {
 	public Candidate(Integer level, Dated<T> dated) {
 		this.level = level;
 		this.dated = dated;
+	}
+
+	public Integer getLevel() {
+		return level;
+	}
+
+	public Dated<T> getDated() {
+		return dated;
 	}
 
 	@Override

@@ -1,10 +1,12 @@
 package iot.challenge.jura.firma.service;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.eclipsesource.json.JsonObject;
 
 import jota.dto.response.SendTransferResponse;
+import jota.model.Transaction;
 import jota.model.Transfer;
 
 /**
@@ -14,7 +16,6 @@ public interface IOTAService {
 
 	public static final int READ_REJECT_API_EXCEPTION = 0;
 	public static final int READ_REJECT_NOT_FOUND = 1;
-	public static final int READ_REJECT_PARSE_EXCEPTION = 2;
 
 	/**
 	 * Reports if the service is sending a transfer
@@ -106,8 +107,27 @@ public interface IOTAService {
 	 * @param hash
 	 *            IOTA transaction hash
 	 *
-	 * @return Message or null if the transaction does not contain a valid json
-	 *         message
+	 * @return Message or null if the transaction does not contain a valid message
 	 */
 	JsonObject readMessage(String hash);
+
+	/**
+	 * Return all address transactions
+	 * 
+	 * @param address
+	 *            IOTA Address
+	 * 
+	 * @return List of transactions
+	 */
+	List<Transaction> getTransactions(String address) throws Exception;
+
+	/**
+	 * Extract transaction message
+	 * 
+	 * @param transaction
+	 *            IOTA transaction
+	 * 
+	 * @return Transaction message
+	 */
+	String extractMessage(Transaction transaction);
 }

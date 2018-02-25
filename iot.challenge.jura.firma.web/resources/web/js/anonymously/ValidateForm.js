@@ -7,12 +7,16 @@ define( ["react"], function( React ) {
 		}
 
 		renderInput( id, type, placeholder ) {
-			return React.createElement( 'input', { key: id, type: type, className: 'form-control', id: id, placeholder: placeholder, ref: ( v ) => this[id] = v } );
+			return React.createElement( 'div', { key: id, className: 'form-group table-row' },
+				React.createElement( 'input', { key: id, type: type, className: 'form-control', id: id, placeholder: placeholder, ref: ( v ) => this[id] = v } )
+			);
 		}
 
 		submitValidation() {
 			this.props.post( 'validate', {
-				transaction: this.transaction.value
+				transaction: this.transaction.value,
+				key: this.key.value,
+				mode: 'anonymously'
 			}, this.props.onValidateResult );
 		}
 
@@ -23,9 +27,8 @@ define( ["react"], function( React ) {
 		render() {
 			return React.createElement( 'div', { className: 'container submit-form' },
 				React.createElement( 'form', { onSubmit: this.handleSubmit },
-					React.createElement( 'div', { className: 'form-group table-row' },
-						this.renderInput( 'transaction', 'text', 'Transaction id' )
-					),
+					this.renderInput( 'transaction', 'text', 'Transaction id' ),
+					this.renderInput( 'key', 'text', 'Key' ),
 					React.createElement( 'button', { type: 'submit', className: 'btn btn-dark btn-block', onClick: this.submitValidation }, 'Validate' )
 				)
 			);

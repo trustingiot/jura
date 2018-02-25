@@ -10,6 +10,8 @@ Import-Package: cfb.pearldiver,
  iot.challenge.jura.ubica.service,
  iot.challenge.jura.util,
  iot.challenge.jura.util.trait,
+ javax.crypto,
+ javax.crypto.spec,
  jota,
  jota.dto.response,
  jota.error,
@@ -30,4 +32,5 @@ Import-Package: cfb.pearldiver,
  org.osgi.service.component;version="1.2.2"
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
-Export-Package: iot.challenge.jura.firma.service
+Export-Package: iot.challenge.jura.firma.crypto,
+ iot.challenge.jura.firma.service

@@ -1,5 +1,5 @@
 define( ["react"], function( React ) {
-	return class ValidateResult extends React.Component {
+	return class Result extends React.Component {
 		constructor( props ) {
 			super( props );
 

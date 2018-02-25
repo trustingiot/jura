@@ -1,33 +1,35 @@
-define( ["react", "js/home/Home", "js/public/Validate", "js/anonymous/Validate"], function( React, Home, PublicValidate, AnonymousValidate ) {
-	return class Main extends React.Component {
-		constructor( props ) {
-			super( props );
+define(
+	["react", "js/home/Home", "js/publicly/Validate", "js/anonymously/Validate"],
+	function( React, Home, PubliclyValidate, AnonymouslyValidate ) {
+		return class Main extends React.Component {
+			constructor( props ) {
+				super( props );
 
-			this.renderSection = this.renderSection.bind( this );
-			this.renderHome = this.renderHome.bind( this );
-			this.renderPublic = this.renderPublic.bind( this );
-			this.renderAnonymous = this.renderAnonymous.bind( this );
-		}
+				this.renderSection = this.renderSection.bind( this );
+				this.renderHome = this.renderHome.bind( this );
+				this.renderPublicly = this.renderPublicly.bind( this );
+				this.renderAnonymously = this.renderAnonymously.bind( this );
+			}
 
-		renderSection() {
-			return React.createElement( 'div', { className: 'container main-container' }, this['render' + ( this.props.section )]() );
-		}
+			renderSection() {
+				return React.createElement( 'div', { className: 'container main-container' }, this['render' + ( this.props.section )]() );
+			}
 
-		renderHome() {
-			return React.createElement( Home, { alias: this.props.alias } );
-		}
+			renderHome() {
+				return React.createElement( Home, { alias: this.props.alias } );
+			}
 
-		renderPublic() {
-			return React.createElement( PublicValidate, {} );
-		}
+			renderPublicly() {
+				return React.createElement( PubliclyValidate, {} );
+			}
 
-		renderAnonymous() {
-			return React.createElement( AnonymousValidate, {} );
-		}
+			renderAnonymously() {
+				return React.createElement( AnonymouslyValidate, {} );
+			}
 
-		render() {
-			let className = 'main-inner' + ( ( this.props.vertical == true ) ? '-middle' : '' );
-			return React.createElement( 'main', { className: className, role: 'main' }, this.renderSection() );
-		}
-	};
-} );
+			render() {
+				let className = 'main-inner' + ( ( this.props.vertical == true ) ? '-middle' : '' );
+				return React.createElement( 'main', { className: className, role: 'main' }, this.renderSection() );
+			}
+		};
+	} );

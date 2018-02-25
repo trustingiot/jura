@@ -4,9 +4,9 @@
 	activate="activate"
 	deactivate="deactivate"
 	modified="updated"
-	name="iot.challenge.jura.firma.transfer.publicly">
+	name="iot.challenge.jura.firma.transfer.anonymously">
 
-	<implementation class="iot.challenge.jura.firma.service.provider.transfer.publicly.TransferServiceProvider"/>
+	<implementation class="iot.challenge.jura.firma.service.provider.transfer.anonymously.TransferServiceProvider"/>
 
 	<service>
 		<provide interface="iot.challenge.jura.firma.service.TransferService"/>
@@ -15,7 +15,7 @@
 
 	<property
 		name="service.pid"
-		value="iot.challenge.jura.firma.transfer.publicly"/>
+		value="iot.challenge.jura.firma.transfer.anonymously"/>
 
 	<reference
 		bind="setLocationService"

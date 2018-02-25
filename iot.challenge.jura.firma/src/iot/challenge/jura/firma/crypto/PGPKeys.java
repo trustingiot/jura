@@ -1,4 +1,4 @@
-package iot.challenge.jura.firma.service.provider.sign;
+package iot.challenge.jura.firma.crypto;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -38,6 +38,8 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.command.CommandService;
+
+import iot.challenge.jura.firma.service.provider.sign.Options;
 
 import static java.text.MessageFormat.*;
 

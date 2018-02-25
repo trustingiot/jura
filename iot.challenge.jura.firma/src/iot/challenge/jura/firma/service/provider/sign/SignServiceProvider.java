@@ -1,5 +1,6 @@
 package iot.challenge.jura.firma.service.provider.sign;
 
+import iot.challenge.jura.firma.crypto.PGP;
 import iot.challenge.jura.firma.service.SignService;
 import iot.challenge.jura.util.trait.ActionRecorder;
 

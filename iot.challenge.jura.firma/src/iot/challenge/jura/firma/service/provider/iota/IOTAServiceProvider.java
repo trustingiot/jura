@@ -13,6 +13,7 @@ import jota.utils.IotaAPIUtils;
 import jota.utils.TrytesConverter;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,9 @@ import cfb.pearldiver.PearlDiverLocalPoW;
  * IOTAService provider
  */
 public class IOTAServiceProvider implements IOTAService, ActionRecorder, ConfigurableComponent {
+
+	public static final String REJECT = "reject";
+	public static final String MESSAGE = "message";
 
 	////
 	//
@@ -305,37 +309,47 @@ public class IOTAServiceProvider implements IOTAService, ActionRecorder, Configu
 	@Override
 	public JsonObject readMessage(String hash) {
 		if (hash != null) {
+			JsonObject result = new JsonObject();
+
 			List<Transaction> transactions;
 			try {
 				transactions = api.findTransactionsObjectsByHashes(new String[] { hash });
 			} catch (Exception e) {
-				JsonObject result = new JsonObject();
-				result.add("reject", READ_REJECT_API_EXCEPTION);
+				result.add(REJECT, READ_REJECT_API_EXCEPTION);
 				return result;
 			}
 
 			Transaction transaction = transactions.get(0);
 			if (!hash.equals(transaction.getHash())) {
-				JsonObject result = new JsonObject();
-				result.add("reject", READ_REJECT_NOT_FOUND);
+				result.add(REJECT, READ_REJECT_NOT_FOUND);
 				return result;
 			}
 
+			String message = extractMessage(transaction);
 			try {
-				String message = transaction.getSignatureFragments();
-				// FIXME transaction.getSignatureFragments().length == 2187 (it must be 2188)
-				// bug in JOTA?
-				while (message.length() < 2188)
-					message += '9';
-				message = TrytesConverter.toString(message);
-				return Json.parse(message.trim()).asObject();
+				result.add(MESSAGE, Json.parse(message.trim()).asObject());
 			} catch (Exception e) {
-				JsonObject result = new JsonObject();
-				result.add("reject", READ_REJECT_PARSE_EXCEPTION);
-				return result;
+				result.add(MESSAGE, message);
 			}
+
+			return result;
 		}
 
 		return null;
+	}
+
+	@Override
+	public String extractMessage(Transaction transaction) {
+		String message = transaction.getSignatureFragments();
+		// FIXME transaction.getSignatureFragments().length == 2187 (it must be 2188)
+		// bug in JOTA?
+		while (message.length() < 2188)
+			message += '9';
+		return TrytesConverter.toString(message).trim();
+	}
+
+	@Override
+	public List<Transaction> getTransactions(String address) throws Exception {
+		return (address != null) ? api.findTransactionObjectsByAddresses(new String[] { address }) : new ArrayList<>();
 	}
 }
