@@ -13,7 +13,8 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
 import iot.challenge.jura.firma.crypto.AES;
 import iot.challenge.jura.firma.service.IOTAService;
-import iot.challenge.jura.firma.web.service.WebService;
+import iot.challenge.jura.firma.service.SignService;
+import iot.challenge.jura.firma.web.service.ServiceProperties;
 import iot.challenge.jura.util.trait.Loggable;
 
 /**
@@ -48,7 +49,8 @@ public class ValidateServlet extends HttpServlet implements Loggable {
 				response.add(TRANSACTION, readJsonString(request, TRANSACTION));
 				if (message.isObject()) {
 					JsonObject sign = message.asObject();
-					if (!WebService.signService.validate(sign))
+					if (!ServiceProperties.get(ServiceProperties.PROPERTY_SIGN_SERVICE, SignService.class)
+							.validate(sign))
 						response.add(REJECT, MSG_INVALID_SIGNATURE);
 
 				} else {
@@ -81,7 +83,8 @@ public class ValidateServlet extends HttpServlet implements Loggable {
 				try {
 					String transaction = readJsonString(request, TRANSACTION);
 					if (transaction != null) {
-						result = WebService.iotaService.readMessage(transaction);
+						result = ServiceProperties.get(ServiceProperties.PROPERTY_IOTA_SERVICE, IOTAService.class)
+								.readMessage(transaction);
 						if (result != null) {
 							if (result.get(REJECT) == null) {
 								Mode mode = valueOf(readJsonString(request, MODE));

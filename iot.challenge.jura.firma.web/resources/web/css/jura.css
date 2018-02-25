@@ -16,15 +16,15 @@
 	height: 100%;
 }
 
-.firma {
+.firma, .admin {
 	height: 100%
 }
 
-.firma .container {
+.firma .container, .admin .container {
 	margin-bottom: 1.2rem;
 }
 
-.firma-block span h6 {
+.firma-block span h6, .admin-block span h6 {
 	display: inline-block;
 }
 
@@ -35,9 +35,17 @@
 	border-width: .1rem;
 }
 
+.admin-block .submit-form form {
+	margin-bottom: 1.5rem;
+}
+
+.admin-block .submit-form {
+	padding-bottom: 0rem;
+}
+
 .validation-result h6 {
 	float: left;
-	margin-bottom:0.1rem;
+	margin-bottom: 0.1rem;
 }
 
 .loading {
@@ -68,4 +76,21 @@
 
 .sign-header {
 	margin-bottom: 0.1rem;
+}
+
+.field {
+	margin-bottom: .5rem;
+}
+
+.field-label {
+	font-weight: bold;
+	after: ':'
+}
+
+.field-label::after {
+	content: ': '
+}
+
+.field-value-none {
+	color: gray;
 }

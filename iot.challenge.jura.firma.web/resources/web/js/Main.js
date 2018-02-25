@@ -1,6 +1,6 @@
 define(
-	["react", "js/home/Home", "js/publicly/Validate", "js/anonymously/Validate"],
-	function( React, Home, PubliclyValidate, AnonymouslyValidate ) {
+	["react", "js/home/Home", "js/publicly/Validate", "js/anonymously/Validate", "js/admin/Admin"],
+	function( React, Home, PubliclyValidate, AnonymouslyValidate, Admin ) {
 		return class Main extends React.Component {
 			constructor( props ) {
 				super( props );
@@ -9,6 +9,7 @@ define(
 				this.renderHome = this.renderHome.bind( this );
 				this.renderPublicly = this.renderPublicly.bind( this );
 				this.renderAnonymously = this.renderAnonymously.bind( this );
+				this.renderAdmin = this.renderAdmin.bind( this );
 			}
 
 			renderSection() {
@@ -25,6 +26,10 @@ define(
 
 			renderAnonymously() {
 				return React.createElement( AnonymouslyValidate, {} );
+			}
+
+			renderAdmin() {
+				return React.createElement( Admin, {} );
 			}
 
 			render() {

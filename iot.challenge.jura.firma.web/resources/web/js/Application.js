@@ -3,7 +3,7 @@ define( ["react", "js/header/Header", "js/Main", "js/Footer"], function( React, 
 		constructor( props ) {
 			super( props );
 
-			this.sections = ['Home', 'Publicly', 'Anonymously'];
+			this.sections = ['Home', 'Publicly', 'Anonymously', 'Admin'];
 			this.verticalSections = ['Home'];
 
 			this.state = { section: 'Home' };

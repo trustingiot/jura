@@ -21,7 +21,6 @@ public class AES {
 		try {
 			cipher = Cipher.getInstance(CIPHER);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			e.printStackTrace();
 			cipher = null;
 		}
 	}

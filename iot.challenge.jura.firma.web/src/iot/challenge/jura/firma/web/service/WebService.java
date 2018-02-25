@@ -2,6 +2,7 @@ package iot.challenge.jura.firma.web.service;
 
 import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.firma.service.SignService;
+import iot.challenge.jura.firma.web.servlet.DIWServlet;
 import iot.challenge.jura.firma.web.servlet.ValidateServlet;
 import iot.challenge.jura.util.trait.ActionRecorder;
 
@@ -41,6 +42,7 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 	protected Map<String, HttpServlet> servlets;
 	protected Map<String, String> resources;
 	protected HttpContext context;
+	protected boolean activated = false;
 
 	////
 	//
@@ -48,10 +50,6 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 	//
 	//
 	protected HttpService httpService;
-
-	// FIXME guice?
-	public static IOTAService iotaService;
-	public static SignService signService;
 
 	protected void setHttpService(HttpService service) {
 		httpService = service;
@@ -62,19 +60,19 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 	}
 
 	protected void setIOTAService(IOTAService service) {
-		iotaService = service;
+		ServiceProperties.put(ServiceProperties.PROPERTY_IOTA_SERVICE, service);
 	}
 
 	protected void unsetIOTAService(IOTAService service) {
-		iotaService = null;
+		ServiceProperties.put(ServiceProperties.PROPERTY_IOTA_SERVICE, null);
 	}
 
 	protected void setSignService(SignService service) {
-		signService = service;
+		ServiceProperties.put(ServiceProperties.PROPERTY_SIGN_SERVICE, service);
 	}
 
 	protected void unsetSignService(SignService service) {
-		signService = null;
+		ServiceProperties.put(ServiceProperties.PROPERTY_SIGN_SERVICE, null);
 	}
 
 	////
@@ -82,11 +80,19 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 	// Service methods
 	//
 	//
-	protected void activate(ComponentContext context) {
-		performRegisteredAction("Activating", this::activate);
+	protected void activate(ComponentContext context, Map<String, Object> properties) {
+		activated = true;
+		performRegisteredAction("Activating", this::activate, properties);
 	}
 
-	protected void deactivate(ComponentContext context) {
+	protected void updated(ComponentContext context, Map<String, Object> properties) {
+		if (!activated) {
+			activate(context, properties);
+		}
+		performRegisteredAction("Updating", this::update, properties);
+	}
+
+	protected void deactivate(ComponentContext context, Map<String, Object> properties) {
 		performRegisteredAction("Deactivating", this::shutdown);
 	}
 
@@ -95,8 +101,13 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 	// Functionality
 	//
 	//
-	protected void activate() {
+	protected void activate(Map<String, Object> properties) {
 		context = httpService.createDefaultHttpContext();
+	}
+
+	protected void update(Map<String, Object> properties) {
+		shutdown();
+		properties.forEach(ServiceProperties::put);
 		init();
 	}
 
@@ -154,6 +165,7 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 		servlets = new HashMap<>();
 
 		servlets.put("/firma/validate", new ValidateServlet());
+		servlets.put("/firma/diw", new DIWServlet());
 
 		for (String alias : servlets.keySet()) {
 			httpService.registerServlet(alias, servlets.get(alias), null, context);
