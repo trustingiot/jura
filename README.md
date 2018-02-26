@@ -10,3 +10,4 @@ The translation of *jura* in English is *it swears*.
 * **Faro**: Multimodal beacon
 * **Graba**: Recording system
 * **Ubica**: Locate beacons
+* **Firma**: Digital signature of locations

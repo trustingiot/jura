@@ -196,11 +196,11 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 
 	protected void registerResources(HttpContext context) throws NamespaceException {
 		resources = new HashMap<>();
-		resources.put("/jura", "resources/web/index.html");
-		resources.put("/jura/main.js", "resources/web/main.js");
-		resources.put("/jura/img", "resources/web/img");
-		resources.put("/jura/css", "resources/web/css");
-		resources.put("/jura/js", "resources/web/js");
+		resources.put("/graba", "resources/web/index.html");
+		resources.put("/graba/main.js", "resources/web/main.js");
+		resources.put("/graba/img", "resources/web/img");
+		resources.put("/graba/css", "resources/web/css");
+		resources.put("/graba/js", "resources/web/js");
 		for (String alias : resources.keySet()) {
 			httpService.registerResources(alias, resources.get(alias), context);
 		}
@@ -210,15 +210,15 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 		servlets = new HashMap<>();
 
 		// Websockets
-		servlets.put("/jura/scanner", new ScannerServlet());
-		servlets.put("/jura/graba", new GrabaServlet());
-		servlets.put("/jura/recordings", new RecordingsServlet());
+		servlets.put("/graba/scanner", new ScannerServlet());
+		servlets.put("/graba/graba", new GrabaServlet());
+		servlets.put("/graba/recordings", new RecordingsServlet());
 
 		// Servlets
-		servlets.put("/jura/aggregate", new RecordingAggregatorServlet());
-		servlets.put("/jura/player", new PlayerServlet());
-		servlets.put("/jura/recorder", new RecorderServlet());
-		servlets.put("/jura/recording", new DonwloadRecordingsServlet());
+		servlets.put("/graba/aggregate", new RecordingAggregatorServlet());
+		servlets.put("/graba/player", new PlayerServlet());
+		servlets.put("/graba/recorder", new RecorderServlet());
+		servlets.put("/graba/recording", new DonwloadRecordingsServlet());
 
 		for (String alias : servlets.keySet()) {
 			httpService.registerServlet(alias, servlets.get(alias), null, context);

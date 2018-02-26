@@ -13,7 +13,7 @@ define( ["react"], function( React ) {
 
 		componentDidMount() {
 			// Graba socket
-			let socket = new WebSocket( 'ws://' + location.host + '/jura/graba' );
+			let socket = new WebSocket( 'ws://' + location.host + '/graba/graba' );
 			socket.onopen = this.clearEvents
 			socket.onmessage = this.processEvent
 			this.socket = socket;

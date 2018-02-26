@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component
+	xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
+	activate="activate"
+	modified="updated"
+	deactivate="deactivate"
+	name="iot.challenge.jura.firma.web">
+
+	<implementation class="iot.challenge.jura.firma.web.service.WebService"/>
+
+	<service>
+		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
+	</service>
+
+	<property
+		name="service.pid"
+		value="iot.challenge.jura.firma.web"/>
+
+	<reference
+		name="HttpService"
+		interface="org.osgi.service.http.HttpService"
+		cardinality="1..1"
+		bind="setHttpService"
+		unbind="unsetHttpService"/>
+
+	<reference
+		name="IOTAService"
+		interface="iot.challenge.jura.firma.service.IOTAService"
+		cardinality="1..1"
+		bind="setIOTAService"
+		unbind="unsetIOTAService"/>
+
+	<reference
+		name="SignService"
+		interface="iot.challenge.jura.firma.service.SignService"
+		cardinality="1..1"
+		bind="setSignService"
+		unbind="unsetSignService"/>
+
+</scr:component>

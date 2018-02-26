@@ -15,7 +15,7 @@ define( ["react", "js/scanner/ScannerOutput"], function( React, ScannerOutput ) 
 		}
 
 		startScan() {
-			let socket = new WebSocket( 'ws://' + location.host + '/jura/scanner' );
+			let socket = new WebSocket( 'ws://' + location.host + '/graba/scanner' );
 			socket.onopen = this.cleanEvents
 			socket.onmessage = this.addEvent
 			this.socket = socket;

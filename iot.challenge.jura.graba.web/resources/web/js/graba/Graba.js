@@ -21,7 +21,7 @@ define(
 
 			post( service, data ) {
 				var xhr = new XMLHttpRequest();
-				xhr.open( 'POST', 'http://' + location.host + '/jura/' + service, true );
+				xhr.open( 'POST', 'http://' + location.host + '/graba/' + service, true );
 				xhr.setRequestHeader( 'Content-Type', 'application/json' );
 				xhr.send( JSON.stringify( data ) );
 			}
