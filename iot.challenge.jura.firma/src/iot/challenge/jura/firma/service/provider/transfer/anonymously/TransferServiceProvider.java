@@ -29,6 +29,11 @@ public class TransferServiceProvider
 	//
 	public static final String ID = "iot.challenge.jura.firma.transfer.anonymously";
 
+	@Override
+	public String getID() {
+		return ID;
+	}
+
 	////
 	//
 	// Parameters

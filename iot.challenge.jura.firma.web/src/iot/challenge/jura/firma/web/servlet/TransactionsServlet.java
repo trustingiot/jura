@@ -2,7 +2,9 @@ package iot.challenge.jura.firma.web.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -41,27 +43,60 @@ public class TransactionsServlet extends HttpServlet implements Loggable {
 	private static final String MSG_REJECT_AUTHENTICATION_FAILURE = "Authentication failure.";
 	private static final String MSG_REJECT_UNKNOWN = "Unknown failure. Validation failed (and we do not know why).";
 
+	protected static Map<EncryptedTransaction, JsonObject> cache;
+
+	static {
+		cache = new HashMap<>();
+	}
+
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		JsonObject message = readJson(request);
 		if (validDIW(message)) {
 			addTransactions(message);
-
 		} else {
 			message.add(REJECT, MSG_REJECT_AUTHENTICATION_FAILURE);
 		}
 		generateResponseMessage(response, message);
 	}
 
-	protected void addTransactions(JsonObject message) {
-		JsonArray transactions = new JsonArray();
+	protected static JsonObject readJson(HttpServletRequest request) throws IOException {
+		try {
+			return Json.parse(request.getReader()).asObject();
+		} catch (NullPointerException npe) {
+			return null;
+		}
+	}
 
+	protected boolean validDIW(JsonObject message) {
+		String device = readJsonString(message, DEVICE);
+		String diw = readJsonString(message, DIW);
+		String salt = ServiceProperties.get(ServiceProperties.PROPERTY_SALT, String.class);
+		return new DIW(salt, device).check(device, diw);
+	}
+
+	protected static String readJsonString(JsonObject object, String key) {
+		JsonValue jsonValue = object.get(key);
+		if (jsonValue == null)
+			return null;
+
+		String value = jsonValue.asString().trim();
+		if (value.isEmpty())
+			return null;
+
+		return value;
+	}
+
+	protected void addTransactions(JsonObject message) {
 		EncryptedTransaction encryptedTransaction = new EncryptedTransaction(
 				ServiceProperties.get(ServiceProperties.PROPERTY_SALT, String.class),
 				readJsonString(message, DEVICE));
 
+		JsonArray transactions = loadFromCache(encryptedTransaction);
+
 		IOTAService iotaService = ServiceProperties.get(ServiceProperties.PROPERTY_IOTA_SERVICE, IOTAService.class);
+
 		Function<EncryptedTransaction, List<Transaction>> generator = transaction -> {
 			try {
 				return iotaService.getTransactions(transaction.getAddress());
@@ -69,6 +104,7 @@ public class TransactionsServlet extends HttpServlet implements Loggable {
 				return null;
 			}
 		};
+
 		Predicate<Transaction> filter = transaction -> {
 			try {
 				String encryptedMessage = iotaService.extractMessage(transaction);
@@ -94,31 +130,20 @@ public class TransactionsServlet extends HttpServlet implements Loggable {
 		message.add(TRANSACTIONS, transactions);
 	}
 
-	protected boolean validDIW(JsonObject message) {
-		String device = readJsonString(message, DEVICE);
-		String diw = readJsonString(message, DIW);
-		String salt = ServiceProperties.get(ServiceProperties.PROPERTY_SALT, String.class);
-		return new DIW(salt, device).check(device, diw);
-	}
+	protected static JsonArray loadFromCache(EncryptedTransaction encryptedTransaction) {
+		JsonArray transactions = new JsonArray();
+		boolean cached;
+		do {
+			cached = false;
+			encryptedTransaction.next();
+			if (cache.containsKey(encryptedTransaction)) {
+				transactions.add(cache.get(encryptedTransaction));
+				cached = true;
+			}
+		} while (cached);
+		encryptedTransaction.back();
 
-	protected static JsonObject readJson(HttpServletRequest request) throws IOException {
-		try {
-			return Json.parse(request.getReader()).asObject();
-		} catch (NullPointerException npe) {
-			return null;
-		}
-	}
-
-	protected static String readJsonString(JsonObject object, String key) {
-		JsonValue jsonValue = object.get(key);
-		if (jsonValue == null)
-			return null;
-
-		String value = jsonValue.asString().trim();
-		if (value.isEmpty())
-			return null;
-
-		return value;
+		return transactions;
 	}
 
 	protected static void generateResponseMessage(HttpServletResponse response, JsonObject message) throws IOException {

@@ -80,17 +80,22 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 	//
 	// Service methods
 	//
-	//
+	// FIXME service methods were no longer invoked at the beginning (perhaps due
+	// to residual configuration in Kura or Maven). They have been patched to fix
+	// the problem
 	protected void activate(ComponentContext context, Map<String, Object> properties) {
 		activated = true;
-		performRegisteredAction("Activating", this::activate, properties);
+		properties.forEach(ServiceProperties::put);
+		performRegisteredAction("Activating", this::activate);
 	}
 
 	protected void updated(ComponentContext context, Map<String, Object> properties) {
 		if (!activated) {
 			activate(context, properties);
+		} else {
+			properties.forEach(ServiceProperties::put);
+			performRegisteredAction("Updating", this::update);
 		}
-		performRegisteredAction("Updating", this::update, properties);
 	}
 
 	protected void deactivate(ComponentContext context, Map<String, Object> properties) {
@@ -102,13 +107,13 @@ public class WebService implements ActionRecorder, ConfigurableComponent {
 	// Functionality
 	//
 	//
-	protected void activate(Map<String, Object> properties) {
+	protected void activate() {
 		context = httpService.createDefaultHttpContext();
+		init();
 	}
 
-	protected void update(Map<String, Object> properties) {
+	protected void update() {
 		shutdown();
-		properties.forEach(ServiceProperties::put);
 		init();
 	}
 

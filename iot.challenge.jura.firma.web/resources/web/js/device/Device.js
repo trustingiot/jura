@@ -38,7 +38,7 @@ define( ["react", "js/device/Form", "js/device/Result"],
 				var response = JSON.parse( result );
 				this.setState( {
 					reject: response.reject,
-					transactions: response.transactions,
+					transactions: response.transactions.reverse(),
 					device: response.device
 				} );
 			}
