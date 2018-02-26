@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component
+	xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
+	activate="activate"
+	deactivate="deactivate"
+	modified="updated"
+	name="iot.challenge.jura.firma.transfer.anonymously">
+
+	<implementation class="iot.challenge.jura.firma.service.provider.transfer.anonymously.TransferServiceProvider"/>
+
+	<service>
+		<provide interface="iot.challenge.jura.firma.service.TransferService"/>
+		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
+	</service>
+
+	<property
+		name="service.pid"
+		value="iot.challenge.jura.firma.transfer.anonymously"/>
+
+	<reference
+		bind="setLocationService"
+		unbind="unsetLocationService"
+		cardinality="1..1"
+		interface="iot.challenge.jura.ubica.service.LocationService"
+		name="LocationService"
+		policy="static" />
+
+	<reference
+		bind="setIOTAService"
+		unbind="unsetIOTAService"
+		cardinality="1..1"
+		interface="iot.challenge.jura.firma.service.IOTAService"
+		name="IOTAService"
+		policy="static" />
+
+	<reference
+		bind="setSignService"
+		unbind="unsetSignService"
+		cardinality="1..1"
+		interface="iot.challenge.jura.firma.service.SignService"
+		name="SignService"
+		policy="static" />
+
+</scr:component>

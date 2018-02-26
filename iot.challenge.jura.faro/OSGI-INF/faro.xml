@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component
+	xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
+	activate="activate"
+	deactivate="deactivate"
+	modified="updated"
+	name="iot.challenge.jura.faro">
+	
+	<implementation class="iot.challenge.jura.faro.BeaconManagerService"/>
+	
+	<service>
+		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
+	</service>
+	
+	<property
+		name="service.pid"
+		value="iot.challenge.jura.faro"/>
+		
+	<reference
+		bind="setBluetoothLeService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.bluetooth.le.BluetoothLeService"
+		name="BluetoothLeService"
+		policy="static"
+		unbind="unsetBluetoothLeService"/>
+		
+	<reference
+		bind="setBluetoothLeIBeaconService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.ble.ibeacon.BluetoothLeIBeaconService"
+		name="BluetoothLeIBeaconService"
+		policy="static"
+		unbind="unsetBluetoothLeIBeaconService"/>
+		
+	<reference
+		bind="setBluetoothLeEddystoneService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.ble.eddystone.BluetoothLeEddystoneService"
+		name="BluetoothLeEddystoneService"
+		policy="static"
+		unbind="unsetBluetoothLeEddystoneService"/>
+		
+	<reference
+		bind="setCloudService"
+		cardinality="1..1"
+		interface="org.eclipse.kura.cloud.CloudService"
+		name="CloudService"
+		policy="static"
+		unbind="unsetCloudService"/>
+		
+</scr:component>

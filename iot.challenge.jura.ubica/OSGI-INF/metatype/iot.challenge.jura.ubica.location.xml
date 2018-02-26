@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
+	localization="en_us">
+	<OCD id="iot.challenge.jura.ubica.location" name="Location service"
+		description="Service to locate beacons in installations">
+
+		<Icon resource="resources/icons/location.png" size="32" />
+
+		<AD id="enable"
+			name="Enable"
+			type="Boolean"
+			cardinality="0"
+			required="true"
+			default="false"
+			description="Enable service"/>
+
+		<AD id="application.topic"
+			name="Application topic"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="jura"
+			description="Application topic for MQTT"/>
+
+		<AD id="location.topic.prefix"
+			name="Locations' topic"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="location"
+			description="Prefix for locations' topic"/>
+
+		<AD id="mqtt.publish"
+			name="MQTT publish"
+			type="Boolean"
+			cardinality="0"
+			required="true"
+			default="false"
+			description="Publish location's events in MQTT broker."/>
+
+		<AD id="retention.time"
+			name="Retention time"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="60"
+			description="Location's event retention time (seconds)."/>
+
+		<AD id="publication.rate"
+			name="Publication rate"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="500"
+			description="Publication rate (milliseconds)"/>
+
+		<AD id="delay"
+			name="Delay"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="15"
+			description="Location delay (seconds)."/>
+
+		<AD id="scanning.window"
+			name="Scanning window"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="1000"
+			description="Scanning window (milliseconds)"/>
+
+		<AD id="attenuation"
+			name="Attenuation"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="150"
+			description="Attenuation (%). Ex: e1=(t:90,rssi:-50), e2=(t:75,rssi:-60), t=95, window=30 => [e.d=t-e.t, e.w=1-(e.d/window)] => e1.w=0.83, e2.w=0.33 => [e.att.w=Math.pow(e.w, att), e.nor.w=e.att.w/sum(att.w)] => [att=1.0 -> e1.att.w=0.83, e2.att.w=0.33 -> e1.nor.w=0.715, e2.nor.w=0.285 -> rssi=(-50*0.715)+(-60*0,285)=-52.85] => (2.0:-51.36, 10.0:-50.001, 0.0:-55, 0.5: -53.86)" />
+
+		<AD id="cutoff.rate"
+			name="Cutoff rate"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="150"
+			description="Cutoff rate for outliers (%). The valid values range is F = S.D. * cutoff.rate => [A.M. - F, A.M. + F]. Ex: A.M. = 5, S.D. = 1, cutoff.rate = 150 => F = 1.5, R = [-3.5, 6.5]"/>			
+
+	</OCD>
+
+	<Designate pid="iot.challenge.jura.ubica.location">
+		<Object ocdref="iot.challenge.jura.ubica.location"/>
+	</Designate>
+</MetaData>

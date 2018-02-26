@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component
+	xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0"
+	activate="activate"
+	deactivate="deactivate"
+	modified="updated"
+	name="iot.challenge.jura.ubica.positioning">
+
+	<implementation class="iot.challenge.jura.ubica.service.provider.positioning.PositioningServiceProvider"/>
+
+	<service>
+		<provide interface="iot.challenge.jura.ubica.service.PositioningService"/>
+		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
+	</service>
+
+	<property
+		name="service.pid"
+		value="iot.challenge.jura.ubica.positioning"/>
+
+	<reference
+		bind="setInstallationService"
+		unbind="unsetInstallationService"
+		cardinality="1..1"
+		interface="iot.challenge.jura.ubica.service.InstallationService"
+		name="InstallationService"
+		policy="static" />
+
+</scr:component>

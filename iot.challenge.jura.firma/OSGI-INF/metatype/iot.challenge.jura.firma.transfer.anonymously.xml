@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetaData xmlns="http://www.osgi.org/xmlns/metatype/v1.2.0"
+	localization="en_us">
+	<OCD id="iot.challenge.jura.firma.transfer.anonymously" name="Anonymously transfer"
+		description="Service to anonymously transfer locations to IOTA. WARNING: Do not enable it if another transfer service is enabled">
+
+		<Icon resource="resources/icons/anonymously.png" size="32" />
+
+		<AD id="enable"
+			name="Enable"
+			type="Boolean"
+			cardinality="0"
+			required="true"
+			default="false"
+			description="Enable service"/>
+
+		<AD id="salt"
+			name="Salt"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="firma salt"
+			description="Salt for encryption. The modification of the value causes the loss of the reference to the previous locations."/>
+
+		<AD id="update.rate"
+			name="Update rate"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="30"
+			description="Update location's queue with the latest locations (seconds)."/>
+
+		<AD id="location.timeout"
+			name="Location timeout"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="600"
+			description="Expired locations will not be sent (seconds)."/>
+
+		<AD id="publication.rate"
+			name="Publication rate"
+			type="Integer"
+			cardinality="0"
+			required="true"
+			default="300"
+			description="Publication rate (seconds)"/>
+
+	</OCD>
+
+	<Designate pid="iot.challenge.jura.firma.transfer.anonymously">
+		<Object ocdref="iot.challenge.jura.firma.transfer.anonymously"/>
+	</Designate>
+</MetaData>
