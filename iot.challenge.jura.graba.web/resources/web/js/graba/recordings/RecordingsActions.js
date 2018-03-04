@@ -51,7 +51,7 @@ define(
 					this.createAction( 'play', 'play', this.playRecording ),
 					this.createAction( 'schedule', 'calendar', () => { }, null, { 'data-target': '#schedule-player-modal-' + this.id, 'data-toggle': 'modal' } ),
 					this.createAction( 'rename', 'edit', () => { }, null, { 'data-target': '#rename-recording-modal-' + this.id, 'data-toggle': 'modal' } ),
-					this.createAction( 'download', 'download', () => { }, { href: this.props.topic.substring( this.props.topic.indexOf( 'jura' ) ) } ),
+					this.createAction( 'download', 'download', () => { }, { href: 'graba/' + this.props.topic.substring( this.props.topic.indexOf( 'recording' ) ) } ),
 					this.createAction( 'aggregate', 'compress', () => { }, aggregatable ? { 'data-target': '#aggregate-recordings-modal-' + this.id, 'data-toggle': 'modal' } : null, null, aggregatable ),
 					this.createAction( 'trash', 'trash-o', this.removeRecording )]
 			}

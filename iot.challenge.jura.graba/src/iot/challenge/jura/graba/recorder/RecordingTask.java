@@ -5,25 +5,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.kura.KuraException;
-import org.eclipse.kura.cloud.CloudClient;
-import org.eclipse.kura.message.KuraPayload;
+import org.eclipse.kura.cloud.CloudPayloadProtoBufDecoder;
+import org.eclipse.kura.data.DataService;
 
 import iot.challenge.jura.graba.GrabaService;
 import iot.challenge.jura.graba.Recording;
 import iot.challenge.jura.util.MqttProcessor;
 import iot.challenge.jura.util.trait.ActionableService;
-import iot.challenge.jura.util.trait.CloudClientAdapter;
+import iot.challenge.jura.util.trait.DataServiceAdapter;
 
 /**
  * Timer task capable of perform a recording
  */
-public class RecordingTask extends TimerTask implements CloudClientAdapter {
+public class RecordingTask extends TimerTask implements DataServiceAdapter {
 
 	private ActionableService service;
 	private Timer timer;
 	private Options options;
 
-	private CloudClient cloudClient;
+	private DataService dataService;
+	private CloudPayloadProtoBufDecoder decoder;
 	private FinishRecordingTask finishRecordingTask;
 	private long startTime;
 	private long recordingTime;
@@ -40,7 +41,8 @@ public class RecordingTask extends TimerTask implements CloudClientAdapter {
 	public RecordingTask(GrabaService service) {
 		super();
 		this.service = service;
-		this.cloudClient = service.getCloudClient();
+		this.dataService = service.getDataService();
+		this.decoder = service.getDecoder();
 		this.options = (Options) service.getOptions();
 		this.timer = service.getTimer();
 		this.startTime = options.getStartTime().toEpochMilli();
@@ -72,19 +74,19 @@ public class RecordingTask extends TimerTask implements CloudClientAdapter {
 			String topic = options.getSubscription();
 			long duration = options.getRecordingTime();
 			recording = new Recording(topic, startTime, duration);
-			cloudClient.addCloudClientListener(this);
-			cloudClient.subscribe(getSubscriptionTopic(), 0);
+			dataService.addDataServiceListener(this);
+			dataService.subscribe(getSubscriptionTopic(), 0);
 			subscribed = true;
 		} catch (KuraException e) {
 			error("Unable to subscribe to {}", getSubscriptionTopic(), e);
-			cloudClient.removeCloudClientListener(this);
+			dataService.removeDataServiceListener(this);
 			subscribed = false;
 			service.cleanControlTopic();
 		}
 	}
 
 	protected String getSubscriptionTopic() {
-		return MessageFormat.format("{0}/+/+", options.getSubscription());
+		return MessageFormat.format("+/+/+/{0}/+/+", options.getSubscription());
 	}
 
 	private FinishRecordingTask createFinishRecordingTask() {
@@ -94,9 +96,9 @@ public class RecordingTask extends TimerTask implements CloudClientAdapter {
 
 	public void finishSubscription() {
 		if (subscribed) {
-			cloudClient.removeCloudClientListener(this);
+			dataService.removeDataServiceListener(this);
 			try {
-				cloudClient.unsubscribe(getSubscriptionTopic());
+				dataService.unsubscribe(getSubscriptionTopic());
 			} catch (KuraException e) {
 				error("Unable to unsubscribe from {}", getSubscriptionTopic(), e);
 				service.cleanControlTopic();
@@ -124,9 +126,13 @@ public class RecordingTask extends TimerTask implements CloudClientAdapter {
 	}
 
 	@Override
-	public void onMessageArrived(String deviceId, String appTopic, KuraPayload msg, int qos, boolean retain) {
-		if (MqttProcessor.matches(getSubscriptionTopic(), appTopic)) {
-			recording.save(appTopic.split("/")[1], msg);
+	public void onMessageArrived(String topic, byte[] payload, int qos, boolean retained) {
+		try {
+			if (MqttProcessor.matches(getSubscriptionTopic(), topic)) {
+				recording.save(topic.split("/")[4], decoder.buildFromByteArray(payload));
+			}
+		} catch (Exception e) {
+			error(e.getMessage());
 		}
 	}
 

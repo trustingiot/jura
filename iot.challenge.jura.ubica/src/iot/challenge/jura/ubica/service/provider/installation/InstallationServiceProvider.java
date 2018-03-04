@@ -15,9 +15,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.cloud.CloudClient;
+import org.eclipse.kura.cloud.CloudPayloadProtoBufDecoder;
 import org.eclipse.kura.cloud.CloudService;
 import org.eclipse.kura.configuration.ConfigurableComponent;
 import org.eclipse.kura.configuration.ConfigurationService;
+import org.eclipse.kura.data.DataService;
 import org.eclipse.kura.message.KuraPayload;
 import org.osgi.service.component.ComponentContext;
 
@@ -31,12 +33,12 @@ import iot.challenge.jura.faro.BeaconEvent;
 import iot.challenge.jura.ubica.installation.Installation;
 import iot.challenge.jura.ubica.service.InstallationService;
 import iot.challenge.jura.util.MqttProcessor;
-import iot.challenge.jura.util.trait.CloudClientAdapter;
+import iot.challenge.jura.util.trait.DataServiceAdapter;
 
 /**
  * InstallationService provider
  */
-public class InstallationServiceProvider implements InstallationService, CloudClientAdapter, ConfigurableComponent {
+public class InstallationServiceProvider implements InstallationService, DataServiceAdapter, ConfigurableComponent {
 
 	////
 	//
@@ -185,6 +187,8 @@ public class InstallationServiceProvider implements InstallationService, CloudCl
 	//
 	//
 	protected CloudService cloudService;
+	private DataService dataService;
+	private CloudPayloadProtoBufDecoder decoder;
 	protected ConfigurationService configurationService;
 
 	protected void setCloudService(CloudService service) {
@@ -193,6 +197,22 @@ public class InstallationServiceProvider implements InstallationService, CloudCl
 
 	protected void unsetCloudService(CloudService service) {
 		cloudService = null;
+	}
+
+	protected void setDataService(DataService service) {
+		dataService = service;
+	}
+
+	protected void unsetDataService(DataService service) {
+		dataService = null;
+	}
+
+	protected void setCloudPayloadProtoBufDecoder(CloudPayloadProtoBufDecoder decoder) {
+		this.decoder = decoder;
+	}
+
+	protected void unsetCloudPayloadProtoBufDecoder(CloudPayloadProtoBufDecoder decoder) {
+		this.decoder = null;
 	}
 
 	protected void setConfigurationService(ConfigurationService service) {
@@ -236,7 +256,7 @@ public class InstallationServiceProvider implements InstallationService, CloudCl
 		if (cloudService != null) {
 			try {
 				cloudClient = cloudService.newCloudClient(options.getApplication());
-				cloudClient.addCloudClientListener(this);
+				dataService.addDataServiceListener(this);
 			} catch (KuraException e) {
 				error("Unable to get CloudClient", e);
 				cloudClient = null;
@@ -246,18 +266,18 @@ public class InstallationServiceProvider implements InstallationService, CloudCl
 	}
 
 	private void subscribeToScanners() {
-		if (cloudClient != null) {
+		if (dataService != null) {
 			try {
-				cloudClient.subscribe(getScannersTopic(), 2);
+				dataService.subscribe(getScannersTopic(), 2);
 			} catch (KuraException e) {
-				error("Unable to subscribe to CloudClient", e);
-				cloudClient.removeCloudClientListener(this);
+				error("Unable to subscribe to data service", e);
+				dataService.removeDataServiceListener(this);
 			}
 		}
 	}
 
 	private String getScannersTopic() {
-		return MessageFormat.format("{0}/+/+", options.getScannerTopicPrefix());
+		return MessageFormat.format("+/+/+/{0}/+/+", options.getScannerTopicPrefix());
 	}
 
 	private void update(Map<String, Object> properties) {
@@ -396,9 +416,12 @@ public class InstallationServiceProvider implements InstallationService, CloudCl
 
 	private void releaseCloudConnection() {
 		if (cloudClient != null) {
-			cloudClient.removeCloudClientListener(this);
 			cloudClient.release();
 			cloudClient = null;
+		}
+
+		if (dataService != null) {
+			dataService.removeDataServiceListener(this);
 		}
 	}
 
@@ -413,13 +436,19 @@ public class InstallationServiceProvider implements InstallationService, CloudCl
 	}
 
 	@Override
-	public void onMessageArrived(String deviceId, String appTopic, KuraPayload message, int qos, boolean retain) {
+	public void onMessageArrived(String topic, byte[] payload, int qos, boolean retained) {
 		synchronized (this) {
-			if (MqttProcessor.matches(getScannersTopic(), appTopic)) {
-				String[] tokens = appTopic.split("/");
-				String scanner = tokens[1];
-				String beacon = tokens[2];
-				notifyBeaconEvent(scanner, beacon, message, qos);
+			info(topic);
+			if (MqttProcessor.matches(getScannersTopic(), topic)) {
+				try {
+					String[] tokens = topic.split("/");
+					String scanner = tokens[4];
+					String beacon = tokens[5];
+					KuraPayload message = decoder.buildFromByteArray(payload);
+					notifyBeaconEvent(scanner, beacon, message, qos);
+				} catch (Exception e) {
+					error(e.getMessage());
+				}
 			}
 		}
 	}

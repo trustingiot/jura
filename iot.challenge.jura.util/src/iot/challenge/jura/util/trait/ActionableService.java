@@ -5,7 +5,9 @@ import java.util.Map;
 
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.cloud.CloudClient;
+import org.eclipse.kura.cloud.CloudPayloadProtoBufDecoder;
 import org.eclipse.kura.cloud.CloudService;
+import org.eclipse.kura.data.DataService;
 import org.eclipse.kura.message.KuraPayload;
 
 import iot.challenge.jura.util.Options;
@@ -159,6 +161,20 @@ public interface ActionableService extends CloudClientAdapter {
 	 *            Service cloud client
 	 */
 	void setCloudClient(CloudClient cloudClient);
+
+	/**
+	 * Returns data service
+	 * 
+	 * @return Data service
+	 */
+	DataService getDataService();
+
+	/**
+	 * Returns CloudPayloadProtoBufDecoder
+	 * 
+	 * @return CloudPayloadProtoBufDecoder
+	 */
+	CloudPayloadProtoBufDecoder getDecoder();
 
 	/**
 	 * Returns service options
