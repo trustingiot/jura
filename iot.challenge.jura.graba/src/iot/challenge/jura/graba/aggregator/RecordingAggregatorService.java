@@ -11,7 +11,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.kura.KuraException;
 import org.eclipse.kura.cloud.CloudClient;
+import org.eclipse.kura.cloud.CloudPayloadProtoBufDecoder;
 import org.eclipse.kura.cloud.CloudService;
+import org.eclipse.kura.data.DataService;
 import org.eclipse.kura.message.KuraPayload;
 import org.osgi.service.component.ComponentContext;
 
@@ -73,6 +75,8 @@ public class RecordingAggregatorService implements ActionableService {
 	//
 	//
 	protected CloudService cloudService;
+	protected DataService dataService;
+	protected CloudPayloadProtoBufDecoder decoder;
 
 	protected void setCloudService(CloudService service) {
 		cloudService = service;
@@ -80,6 +84,30 @@ public class RecordingAggregatorService implements ActionableService {
 
 	protected void unsetCloudService(CloudService service) {
 		cloudService = null;
+	}
+
+	protected void setDataService(DataService service) {
+		dataService = service;
+	}
+
+	protected void unsetDataService(DataService service) {
+		dataService = service;
+	}
+
+	public DataService getDataService() {
+		return dataService;
+	}
+
+	protected void setCloudPayloadProtoBufDecoder(CloudPayloadProtoBufDecoder decoder) {
+		this.decoder = decoder;
+	}
+
+	protected void unsetCloudPayloadProtoBufDecoder(CloudPayloadProtoBufDecoder decoder) {
+		this.decoder = null;
+	}
+
+	public CloudPayloadProtoBufDecoder getDecoder() {
+		return decoder;
 	}
 
 	////

@@ -24,7 +24,21 @@
 		name="CloudService"
 		policy="static"
 		unbind="unsetCloudService"/>
-		
+
+	<reference
+		name="CloudPayloadProtoBufDecoder"
+		interface="org.eclipse.kura.cloud.CloudPayloadProtoBufDecoder"
+		cardinality="1..1"
+		bind="setCloudPayloadProtoBufDecoder"
+		unbind="unsetCloudPayloadProtoBufDecoder"/>
+
+	<reference
+		name="DataService"
+		interface="org.eclipse.kura.data.DataService"
+		cardinality="1..1"
+		bind="setDataService"
+		unbind="unsetDataService"/>
+
 	<reference
 		name="ConfigurationService"
 		policy="static"
