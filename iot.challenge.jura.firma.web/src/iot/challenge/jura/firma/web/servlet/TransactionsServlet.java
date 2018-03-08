@@ -33,6 +33,7 @@ public class TransactionsServlet extends HttpServlet implements Loggable {
 
 	public static final String DEVICE = "device";
 	public static final String DIW = "diw";
+	public static final String INDEX = "index";
 	public static final String TRANSACTIONS = "transactions";
 	public static final String REJECT = "reject";
 
@@ -126,7 +127,7 @@ public class TransactionsServlet extends HttpServlet implements Loggable {
 		} catch (Exception e) {
 			message.add(REJECT, MSG_REJECT_UNKNOWN);
 		}
-
+		filterTransactions(message, transactions);
 		message.add(TRANSACTIONS, transactions);
 	}
 
@@ -144,6 +145,12 @@ public class TransactionsServlet extends HttpServlet implements Loggable {
 		encryptedTransaction.back();
 
 		return transactions;
+	}
+
+	protected static void filterTransactions(JsonObject message, JsonArray transactions) {
+		int index = message.getInt(INDEX, 0);
+		while (index-- > 0)
+			transactions.remove(0);
 	}
 
 	protected static void generateResponseMessage(HttpServletResponse response, JsonObject message) throws IOException {
