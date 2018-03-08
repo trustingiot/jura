@@ -27,7 +27,7 @@ Import-Package: com.eclipsesource.json;version="0.9.4",
  org.eclipse.kura.data;version="1.1.2",
  org.eclipse.kura.data.listener;version="1.0.1",
  org.eclipse.kura.message;version="1.1.1",
- org.osgi.service.component;version="1.2.0",
+ org.osgi.service.component;version="1.2.2",
  org.osgi.service.http;version="1.2.1"
 Bundle-ClassPath: lib/org.eclipse.paho.client.mqttv3.jar,
  .

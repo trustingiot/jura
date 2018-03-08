@@ -16,5 +16,5 @@ Import-Package: com.eclipsesource.json;version="0.9.4",
  jota.model,
  org.eclipse.kura;version="1.4.0",
  org.eclipse.kura.configuration;version="1.1.2",
- org.osgi.service.component;version="1.2.0",
+ org.osgi.service.component;version="1.2.2",
  org.osgi.service.http;version="1.2.1"
