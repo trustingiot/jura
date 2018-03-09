@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="iot.challenge.jura.firma.feature"
-      label="Feature"
+      id="iot.challenge.jura.worker.iota.feature"
+      label="IOTA Worker Feature"
       version="1.0.0.qualifier">
 
    <description url="http://www.example.com/description">
@@ -17,29 +17,18 @@
    </license>
 
    <includes
-         id="iot.challenge.jura.ubica.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="iot.challenge.jura.worker.iota.feature"
+         id="iot.challenge.jura.util.feature"
          version="0.0.0"/>
 
    <plugin
-         id="iot.challenge.jura.firma"
+         id="iot.challenge.jura.worker.iota"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="iot.challenge.jura.pgp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="iot.challenge.jura.firma.web"
+         id="iot.challenge.jura.jota"
          download-size="0"
          install-size="0"
          version="0.0.0"

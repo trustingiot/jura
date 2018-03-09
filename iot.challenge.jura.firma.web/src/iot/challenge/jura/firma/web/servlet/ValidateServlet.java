@@ -16,6 +16,7 @@ import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.firma.service.SignService;
 import iot.challenge.jura.firma.web.service.ServiceProperties;
 import iot.challenge.jura.util.trait.Loggable;
+import iot.challenge.jura.worker.iota.IotaNode;
 
 /**
  * Servlet for the validation of transactions
@@ -108,11 +109,11 @@ public class ValidateServlet extends HttpServlet implements Loggable {
 			int cause = response.get(REJECT).asInt();
 			String m = "";
 			switch (cause) {
-			case IOTAService.READ_REJECT_API_EXCEPTION:
+			case IotaNode.READ_REJECT_API_EXCEPTION:
 				m = MSG_REJECT_API_EXCEPTION;
 				break;
 
-			case IOTAService.READ_REJECT_NOT_FOUND:
+			case IotaNode.READ_REJECT_NOT_FOUND:
 				m = MSG_REJECT_NOT_FOUND;
 				break;
 
