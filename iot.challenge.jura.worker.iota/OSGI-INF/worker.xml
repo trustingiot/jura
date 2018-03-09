@@ -4,18 +4,17 @@
 	activate="activate"
 	deactivate="deactivate"
 	modified="updated"
-	name="iot.challenge.jura.firma.iota">
+	name="iot.challenge.jura.worker.iota">
 
-	<implementation class="iot.challenge.jura.firma.service.provider.iota.IOTAServiceProvider"/>
+	<implementation class="iot.challenge.jura.worker.iota.Worker"/>
 
 	<service>
-		<provide interface="iot.challenge.jura.firma.service.IOTAService"/>
 		<provide interface="org.eclipse.kura.configuration.ConfigurableComponent"/>
 	</service>
 
 	<property
 		name="service.pid"
-		value="iot.challenge.jura.firma.iota"/>
+		value="iot.challenge.jura.worker.iota"/>
 
 	<reference
 		name="CloudPayloadProtoBufDecoder"

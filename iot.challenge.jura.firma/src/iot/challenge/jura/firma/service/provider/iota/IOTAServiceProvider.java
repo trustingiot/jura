@@ -2,39 +2,31 @@ package iot.challenge.jura.firma.service.provider.iota;
 
 import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.util.trait.ActionRecorder;
-import jota.IotaAPI;
-import jota.IotaLocalPoW;
-import jota.dto.response.SendTransferResponse;
-import jota.error.ArgumentException;
+import iot.challenge.jura.util.trait.DataServiceAdapter;
+import iot.challenge.jura.worker.iota.IotaNode;
+import iot.challenge.jura.util.MqttProcessor;
 import jota.model.Transaction;
-import jota.model.Transfer;
-import jota.pow.SpongeFactory;
-import jota.utils.IotaAPIUtils;
-import jota.utils.TrytesConverter;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
+import org.eclipse.kura.KuraException;
+import org.eclipse.kura.cloud.CloudPayloadProtoBufDecoder;
+import org.eclipse.kura.cloud.CloudPayloadProtoBufEncoder;
 import org.eclipse.kura.configuration.ConfigurableComponent;
+import org.eclipse.kura.data.DataService;
+import org.eclipse.kura.message.KuraPayload;
 import org.osgi.service.component.ComponentContext;
 
-import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
-import cfb.pearldiver.PearlDiver;
-import cfb.pearldiver.PearlDiverLocalPoW;
+import static iot.challenge.jura.worker.iota.WorkerAPI.*;
 
 /**
  * IOTAService provider
  */
-public class IOTAServiceProvider implements IOTAService, ActionRecorder, ConfigurableComponent {
+public class IOTAServiceProvider implements IOTAService, ActionRecorder, ConfigurableComponent, DataServiceAdapter {
 
 	public static final String REJECT = "reject";
 	public static final String MESSAGE = "message";
@@ -56,15 +48,48 @@ public class IOTAServiceProvider implements IOTAService, ActionRecorder, Configu
 	// Parameters
 	//
 	//
-	protected IotaAPI api;
-	protected IotaLocalPoW pow;
-	protected PearlDiver diver;
+	protected IotaNode node;
+
 	protected Options options;
-	protected String address;
-	protected List<Transfer> transfers;
-	protected Consumer<SendTransferResponse> callback;
-	protected ExecutorService transferWorker;
-	protected Future<?> transferHandle;
+
+	protected Consumer<String> callback;
+
+	protected Map<String, Long> queued;
+	protected Map<String, Boolean> workers;
+	protected Map<String, Consumer<String>> callbacks;
+
+	////
+	//
+	// Registered services
+	//
+	//
+	protected DataService dataService;
+	protected CloudPayloadProtoBufDecoder decoder;
+	protected CloudPayloadProtoBufEncoder encoder;
+
+	protected void setDataService(DataService service) {
+		dataService = service;
+	}
+
+	protected void unsetDataService(DataService service) {
+		dataService = null;
+	}
+
+	protected void setCloudPayloadProtoBufDecoder(CloudPayloadProtoBufDecoder decoder) {
+		this.decoder = decoder;
+	}
+
+	protected void unsetCloudPayloadProtoBufDecoder(CloudPayloadProtoBufDecoder decoder) {
+		this.decoder = null;
+	}
+
+	protected void setCloudPayloadProtoBufEncoder(CloudPayloadProtoBufEncoder encoder) {
+		this.encoder = encoder;
+	}
+
+	protected void unsetCloudPayloadProtoBufEncoder(CloudPayloadProtoBufEncoder encoder) {
+		this.encoder = null;
+	}
 
 	////
 	//
@@ -89,104 +114,75 @@ public class IOTAServiceProvider implements IOTAService, ActionRecorder, Configu
 	//
 	//
 	protected void activate(Map<String, Object> properties) {
-		createPoW();
+		queued = new HashMap<>();
+		workers = new HashMap<>();
+		callbacks = new HashMap<>();
+		startSubscription();
 		createOptions(properties);
 	}
 
-	protected void createPoW() {
+	protected void startSubscription() {
 		try {
-			pow = new PearlDiverLocalPoW();
-			Field field = Arrays.asList(PearlDiverLocalPoW.class.getDeclaredFields())
-					.stream()
-					.filter(f -> f.getType().equals(PearlDiver.class))
-					.findFirst()
-					.orElse(null);
-
-			if (field == null)
-				throw new IllegalArgumentException();
-
-			boolean flag = field.isAccessible();
-			field.setAccessible(true);
-			diver = (PearlDiver) field.get(pow);
-			field.setAccessible(flag);
-
-		} catch (Exception e) {
-			error("Create IOTA local PoW failed");
-			pow = null;
-			diver = null;
+			dataService.addDataServiceListener(this);
+			dataService.subscribe(ALL(WORKER_TOPIC), 0);
+			dataService.subscribe(ALL(DONE_TOPIC), 0);
+		} catch (KuraException e) {
+			error("Unable to subscribe to topics", e);
+			dataService.removeDataServiceListener(this);
 		}
-
 	}
 
 	protected void createOptions(Map<String, Object> properties) {
+		stopExecution();
 		options = new Options(properties);
-		updateAPI();
+		updateConfiguration();
+		updateNode();
 	}
 
-	protected void updateAPI() {
-		if (shouldUpdateAPI()) {
-			api = new IotaAPI.Builder()
-					.localPoW(pow)
-					.protocol(options.getIotaNodeProtocol())
-					.host(options.getIotaNodeHost())
-					.port(options.getIotaNodePort())
-					.build();
-			obtainAddress();
-		}
+	protected void stopExecution() {
+		interrupt();
+		for (String id : workers.keySet())
+			workers.put(id, true);
+
+		queued.clear();
 	}
 
-	protected boolean shouldUpdateAPI() {
-		if (api == null)
-			return true;
-
-		if (!api.getProtocol().equals(options.getIotaNodeProtocol()))
-			return true;
-
-		if (!api.getHost().equals(options.getIotaNodeHost()))
-			return true;
-
-		if (!api.getPort().equals(options.getIotaNodePort()))
-			return true;
-
-		return false;
-	}
-
-	protected void obtainAddress() {
+	protected void updateConfiguration() {
+		KuraPayload payload = new KuraPayload();
+		payload.addMetric(HOST_PROPERTY, options.getIotaNodeHost());
+		payload.addMetric(PORT_PROPERTY, options.getIotaNodePort());
+		payload.addMetric(PROTOCOL_PROPERTY, options.getIotaNodeProtocol());
+		payload.addMetric(SEED_PROPERTY, options.getIotaSeed());
 		try {
-			address = IotaAPIUtils.newAddress(
-					options.getIotaSeed(), // Seed
-					2, // Security
-					0, // Address
-					true, // Add checksum
-					SpongeFactory.create(SpongeFactory.Mode.KERL)); // Curl instance
-		} catch (ArgumentException exception) {
-			address = null;
+			dataService.publish(CONFIG_TOPIC, encoder.getBytes(payload, false), 2, true, 1);
+		} catch (Exception e) {
+			error("Unable to update configuration");
 		}
+	}
+
+	protected void updateNode() {
+		if (node == null) {
+			try {
+				node = new IotaNode();
+			} catch (Exception e) {
+				error("Create IOTA node failed", e);
+				node = null;
+			}
+		}
+		node.setConfiguration(
+				options.getIotaNodeProtocol(),
+				options.getIotaNodeHost(),
+				options.getIotaNodePort(),
+				options.getIotaSeed());
 	}
 
 	protected void update(Map<String, Object> properties) {
-		shutdownWorker();
 		createOptions(properties);
 	}
 
-	protected void shutdownWorker() {
-		synchronized (this) {
-			interrupt();
-
-			if (transferHandle != null) {
-				transferHandle.cancel(true);
-				transferHandle = null;
-			}
-
-			if (transferWorker != null) {
-				transferWorker.shutdown();
-				transferWorker = null;
-			}
-		}
-	}
-
 	protected void deactivate() {
-		shutdownWorker();
+		stopExecution();
+		dataService.removeDataServiceListener(this);
 	}
 
 	////
@@ -195,161 +191,129 @@ public class IOTAServiceProvider implements IOTAService, ActionRecorder, Configu
 	//
 	//
 	@Override
-	public boolean isTransferring() {
-		return transferHandle != null;
+	public boolean ready() {
+		return findFirstFreeWorker() != null;
 	}
 
-	@Override
-	public boolean ready() {
-		return !(address == null || isTransferring());
+	protected String findFirstFreeWorker() {
+		return workers.keySet().stream().filter(workers::get).findFirst().orElse(null);
 	}
 
 	@Override
 	public void interrupt() {
-		if (isTransferring()) {
-			diver.cancel();
-			api.interruptAttachingToTangle();
-		}
-	}
-
-	@Override
-	public String getAddress() {
-		return address;
-	}
-
-	@Override
-	public void transfer(String address, String message, Consumer<SendTransferResponse> callback) {
-		transfer(new Transfer(address, 0, TrytesConverter.toTrytes(message), ""), callback);
-	}
-
-	@Override
-	public void transfer(String address, String message) {
-		transfer(address, message, null);
-	}
-
-	@Override
-	public void transfer(String message, Consumer<SendTransferResponse> callback) {
-		transfer(new Transfer(address, 0, TrytesConverter.toTrytes(message), ""), callback);
-	}
-
-	@Override
-	public void transfer(String message) {
-		transfer(address, message, null);
-	}
-
-	@Override
-	public void transfer(Transfer transfer, Consumer<SendTransferResponse> callback) {
-		boolean executed = false;
-
-		executed = executeTransfer(transfer, callback);
-
-		if (callback != null && !executed)
-			callback.accept(null);
-	}
-
-	@Override
-	public void transfer(Transfer transfer) {
-		transfer(transfer, null);
-	}
-
-	protected boolean executeTransfer(Transfer transfer, Consumer<SendTransferResponse> callback) {
-		if (!ready())
-			return false;
-
-		if (transferWorker == null)
-			transferWorker = Executors.newScheduledThreadPool(1);
-
-		prepareTransfer(transfer, callback);
-		transferHandle = transferWorker.submit(this::sendPreparedTransfer);
-		return true;
-	}
-
-	protected void prepareTransfer(Transfer transfer, Consumer<SendTransferResponse> callback) {
-		this.transfers = Arrays.asList(transfer);
-		this.callback = callback;
-	}
-
-	protected void sendPreparedTransfer() {
-		SendTransferResponse response = null;
-
 		try {
-			long time = System.currentTimeMillis();
-			response = sendToIOTA(transfers);
-			logTransfer(time, response);
-		} catch (Exception exception) {
-			error("IOTA transfer fail");
+			Map<String, Boolean> aux = new HashMap<>();
+			byte[] payload = new byte[0];
+			for (String id : workers.keySet()) {
+				dataService.publish(SUB(TODO_TOPIC, id), payload, 2, true, 0);
+				aux.put(id, true);
+			}
+			workers = aux;
+		} catch (KuraException e) {
+			error("Send todo failed", e);
 		}
-
-		transferHandle = null;
-
-		if (callback != null)
-			callback.accept(response);
-
 	}
 
-	protected SendTransferResponse sendToIOTA(List<Transfer> transfers) throws ArgumentException {
-		info("IOTA Transaction started");
-		return api.sendTransfer(
-				options.getIotaSeed(), // Seed
-				2, // Security
-				9, // Depth
-				14, // Min weight
-				transfers, // Transfers
-				null, // Inputs
-				null, // Remainders
-				false); // Validate inputs
+	@Override
+	public void transfer(String address, String message, Consumer<String> callback) {
+		transfer(findFirstFreeWorker(), address, message, callback);
 	}
 
-	protected void logTransfer(long time, SendTransferResponse transfer) {
-		info("Transaction https://thetangle.org/transaction/{} completed ({} seconds)",
-				transfer.getTransactions().get(0).getHash(),
-				(System.currentTimeMillis() - time) / 1000);
+	protected void transfer(String worker, String address, String message, Consumer<String> callback) {
+		try {
+			queued.put(worker, System.currentTimeMillis());
+			workers.put(worker, false);
+			callbacks.put(worker, callback);
+			dataService.publish(SUB(TODO_TOPIC, worker), generatePayload(address, message), 2, true, 0);
+		} catch (KuraException e) {
+			error("Unable to transfer message");
+			queued.remove(worker);
+			workers.put(worker, true);
+			callbacks.remove(worker);
+		}
+	}
+
+	protected byte[] generatePayload(String address, String message) throws KuraException {
+		KuraPayload payload = new KuraPayload();
+		payload.addMetric("address", address);
+		payload.addMetric("message", message);
+		return encoder.getBytes(payload, false);
 	}
 
 	@Override
 	public JsonObject readMessage(String hash) {
-		if (hash != null) {
-			JsonObject result = new JsonObject();
-
-			List<Transaction> transactions;
-			try {
-				transactions = api.findTransactionsObjectsByHashes(new String[] { hash });
-			} catch (Exception e) {
-				result.add(REJECT, READ_REJECT_API_EXCEPTION);
-				return result;
-			}
-
-			Transaction transaction = transactions.get(0);
-			if (!hash.equals(transaction.getHash())) {
-				result.add(REJECT, READ_REJECT_NOT_FOUND);
-				return result;
-			}
-
-			String message = extractMessage(transaction);
-			try {
-				result.add(MESSAGE, Json.parse(message.trim()).asObject());
-			} catch (Exception e) {
-				result.add(MESSAGE, message);
-			}
-
-			return result;
-		}
-
-		return null;
+		return node.readMessage(hash);
 	}
 
 	@Override
 	public String extractMessage(Transaction transaction) {
-		String message = transaction.getSignatureFragments();
-		// FIXME transaction.getSignatureFragments().length == 2187 (it must be 2188)
-		// bug in JOTA?
-		while (message.length() < 2188)
-			message += '9';
-		return TrytesConverter.toString(message).trim();
+		return node.extractMessage(transaction);
 	}
 
 	@Override
 	public List<Transaction> getTransactions(String address) throws Exception {
-		return (address != null) ? api.findTransactionObjectsByAddresses(new String[] { address }) : new ArrayList<>();
+		return node.getTransactions(address);
 	}
+
+	@Override
+	public void onMessageArrived(String topic, byte[] payload, int qos, boolean retained) {
+		if (MqttProcessor.matches(ALL(WORKER_TOPIC), topic)) {
+			assignWorker(topic, payload);
+
+		} else if (MqttProcessor.matches(ALL(DONE_TOPIC), topic)) {
+			done(topic, payload);
+		}
+	}
+
+	protected void assignWorker(String topic, byte[] payload) {
+		if (MqttProcessor.matches(ALL(WORKER_TOPIC), topic)) {
+			String[] tokens = topic.split("/");
+			String id = tokens[tokens.length - 1];
+
+			if (payload.length > 0) {
+				workers.put(id, true);
+			} else {
+				workers.remove(id);
+			}
+		}
+	}
+
+	protected void done(String topic, byte[] payload) {
+		try {
+			String hash = "";
+			String worker = null;
+			if (payload != null && payload.length != 0) {
+				KuraPayload kuraPayload = decoder.buildFromByteArray(payload);
+				worker = (String) kuraPayload.getMetric("worker");
+				hash = (String) kuraPayload.getMetric("hash");
+			} else {
+				String[] tokens = topic.split("/");
+				worker = tokens[tokens.length - 1];
+			}
+
+			done(worker, hash);
+
+		} catch (KuraException e) {
+			error("Unable to decode payload", e);
+		}
+	}
+
+	protected void done(String worker, String hash) {
+		if (queued.containsKey(worker)) {
+			if (!hash.isEmpty()) {
+				logTransfer(queued.remove(worker), hash);
+			}
+			workers.put(worker, true);
+			Consumer<String> callback = callbacks.remove(worker);
+			if (callback != null) {
+				callback.accept(hash);
+			}
+		}
+	}
+
+	protected void logTransfer(long time, String hash) {
+		info("Transaction => {}{} ({} seconds)",
+				TRANSACTION_EXPLORER, hash, (System.currentTimeMillis() - time) / 1000);
+	}
+
 }

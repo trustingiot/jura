@@ -10,7 +10,7 @@ import iot.challenge.jura.firma.service.TransferService;
 import iot.challenge.jura.firma.service.IOTAService;
 import iot.challenge.jura.ubica.installation.Point;
 import iot.challenge.jura.util.trait.ActionRecorder;
-import jota.dto.response.SendTransferResponse;
+import iot.challenge.jura.worker.iota.IotaNode;
 import iot.challenge.jura.ubica.service.LocationService;
 
 import java.text.MessageFormat;
@@ -125,7 +125,7 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 		buffer = new HashMap<>();
 		createOptions(properties);
 	}
-	
+
 	protected void createOptions(Map<String, Object> properties) {
 		options = new Options(properties);
 	}
@@ -336,24 +336,23 @@ public class TransferServiceProvider implements TransferService, ActionRecorder,
 	}
 
 	protected String getAddress(String device) {
-		return iotaService.getAddress();
+		return IotaNode.generateValidAddress(options.getAddress());
 	}
 
-	protected void doAfterTransfer(Message message, SendTransferResponse response) {
-		logTransfer(message, response);
-		if (transferASAP || response == null)
+	protected void doAfterTransfer(Message message, String hash) {
+		logTransfer(message, hash);
+		if (transferASAP || hash == null)
 			rescheduleTransfer(false);
 	}
 
-	protected void logTransfer(Message message, SendTransferResponse response) {
+	protected void logTransfer(Message message, String hash) {
 		String location = MessageFormat.format("[{0},{1} = {2}]",
 				message.getInstallation(),
 				message.getDevice(),
 				message.getLocation());
-		String hash = (response != null) ? response.getTransactions().get(0).getHash() : null;
 
-		if (response != null) {
-			debug("Location {} transferred -> https://thetangle.org/transaction/{}", location, hash);
+		if (hash != null && !hash.isEmpty()) {
+			debug("Location {} transferred -> {}/{}", location, IOTAService.TRANSACTION_EXPLORER, hash);
 
 		} else {
 			error("The transfer of the location {} to IOTA failed", location);

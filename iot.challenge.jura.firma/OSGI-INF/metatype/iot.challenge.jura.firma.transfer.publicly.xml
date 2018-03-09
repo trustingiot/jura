@@ -19,7 +19,7 @@
 			type="Integer"
 			cardinality="0"
 			required="true"
-			default="30"
+			default="10"
 			description="Update location's queue with the latest locations (seconds)."/>
 
 		<AD id="location.timeout"
@@ -35,8 +35,16 @@
 			type="Integer"
 			cardinality="0"
 			required="true"
-			default="300"
+			default="30"
 			description="Publication rate (seconds)"/>
+
+		<AD id="address"
+			name="Public address"
+			type="String"
+			cardinality="0"
+			required="true"
+			default="FIRMA"
+			description="Public IOTA address (trytes)"/>
 
 	</OCD>
 
